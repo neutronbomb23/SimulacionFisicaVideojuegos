@@ -1,18 +1,16 @@
 #include <ctype.h>
-
 #include <PxPhysicsAPI.h>
-
 #include <vector>
-
 #include "core.hpp"
 #include "RenderUtils.hpp"
 #include "callbacks.hpp"
-
+#include "Particle.h"
 #include <iostream>
 
 std::string display_text = "This is a test";
+std::string display_text1 = "PHYSX ES UN COÑAZO";
 
-
+using namespace std;
 using namespace physx;
 
 PxDefaultAllocator		gAllocator;
@@ -21,7 +19,7 @@ PxDefaultErrorCallback	gErrorCallback;
 PxFoundation*			gFoundation = NULL;
 PxPhysics*				gPhysics	= NULL;
 
-
+PxSphereGeometry sphereGeometry;
 PxMaterial*				gMaterial	= NULL;
 
 PxPvd*                  gPvd        = NULL;
@@ -29,11 +27,13 @@ PxPvd*                  gPvd        = NULL;
 PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
-
+Particle* particula;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
 {
+	//Llamarlo aquí para que se ejecute (cualquier cosa) 
+
 	PX_UNUSED(interactive);
 
 	gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
@@ -45,6 +45,8 @@ void initPhysics(bool interactive)
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(),true,gPvd);
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+	particula = new Particle(1.0f);
+
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
@@ -62,10 +64,13 @@ void initPhysics(bool interactive)
 // t: time passed since last call in milliseconds
 void stepPhysics(bool interactive, double t)
 {
+	//Cada paso de simulación se llama a esto 
 	PX_UNUSED(interactive);
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
+	particula->Update();
+	
 }
 
 // Function to clean data
@@ -93,8 +98,12 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	//case 'B': break;
-	//case ' ':	break;
+	case 'B':
+	{
+		
+		break;
+	}
+	case 'b':	break;
 	case ' ':
 	{
 		break;
@@ -123,6 +132,9 @@ int main(int, const char*const*)
 		stepPhysics(false);
 	cleanupPhysics(false);
 #endif
+	
+	cleanupPhysics(false);
 
 	return 0;
+	
 }
