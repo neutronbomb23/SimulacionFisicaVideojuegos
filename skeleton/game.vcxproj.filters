@@ -8,8 +8,8 @@
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="RenderUtils.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="callbacks.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Particle.cpp" />
   </ItemGroup>
   <ItemGroup>

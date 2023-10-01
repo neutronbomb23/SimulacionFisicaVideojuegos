@@ -1,42 +1,32 @@
 #pragma once
 #include "RenderUtils.hpp"
-#include <PxPhysicsAPI.h>
+#include <iostream>
 
-using namespace physx;
-
+// La clase Particle representa una partícula en la simulación.
 class Particle
 {
-public:
-	Particle(float radio, Vector4 c = Vector4(1, 1, 0, 1), Vector3 p = Vector3(0.0f, 0.0f, 0.0f));
-	void Update();
-	~Particle();
 private:
-	RenderItem* particle;
-	PxTransform* t;
-	Vector3 vel;
+    Vector3 velocity;        // Velocidad de la partícula.
+    physx::PxTransform position; // Posición actual de la partícula en el mundo.
+    RenderItem* renderItem;  // Representación gráfica de la partícula para su renderización.
+    Vector3 acceleration;    // Aceleración experimentada por la partícula.
+    float dampingFactor;     // Factor para controlar la reducción de velocidad (efecto de amortiguación).
+    float weight;            // Masa de la partícula.
+    bool isDestroyed = false; // Bandera para verificar si la partícula debe ser destruida.
+
+public:
+    Particle(physx::PxTransform initPos, Vector3 initVel, Vector3 initAccel, float weightVal, float dampingVal);
+    ~Particle();
+
+    // Integra el movimiento de la partícula usando sus propiedades actuales.
+    void updateMovement(double timeDelta);
+
+    // Realiza un movimiento de disparo vertical para la partícula.
+    void performVerticalShoot(double timeDelta);
+
+    // Métodos de acceso (getters) y establecimiento (setters) para los miembros de la clase.
+    RenderItem* getRenderItem() const;
+    physx::PxTransform* getPosition();
+    bool shouldBeDestroyed() const;
+    void markForDestruction();
 };
-
-
-//#pragma once
-//#include <vector>
-//#include "core.hpp"
-//#include <PxPhysicsAPI.h>
-//#include "RenderUtils.hpp"
-//
-//using namespace std; 
-//using namespace physx;
-//class Particle
-//{
-//public:
-//	Particle(Vector3 pos, Vector3 vel, PxShape* _shape, Vector4 _color, RenderItem* _rend);
-//	~Particle();
-//	void UpdateTr();
-//	void Integrate(double t);
-//private:
-//	Vector3 vel;
-//	PxTransform pos;
-//	PxShape* shape;
-//	Vector4 color_;
-//	RenderItem* renderItem;
-//};
-//

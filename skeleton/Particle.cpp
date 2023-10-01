@@ -1,29 +1,54 @@
 #include "Particle.h"
 
-Particle::Particle(float radio, Vector4 c, Vector3 p)
+// Constructor: Inicializa la partícula con los valores dados.
+Particle::Particle(physx::PxTransform initPos, Vector3 initVel, Vector3 initAccel, float weightVal, float dampingVal)
+    : position(initPos), velocity(initVel), acceleration(initAccel), weight(weightVal), dampingFactor(dampingVal)
 {
-	t = new PxTransform(p);
-	
-	particle = new RenderItem(CreateShape(PxSphereGeometry(radio)), t, c);
-	vel = Vector3(0.0, 0.0003, 0);
+    renderItem = new RenderItem();
 }
 
-
-void Particle::Update() {
-	t->p += vel;
+// Destructor: Deregistra y libera la memoria del objeto RenderItem.
+Particle::~Particle()
+{
+    DeregisterRenderItem(renderItem);
+    delete renderItem;
 }
-//#include "Particle.h"
-//Particle::Particle(Vector3 pos, Vector3 vel, PxShape* _shape, Vector4 _color, RenderItem* _rend) {
-//	vel.x = 2;
-//	vel.y = 1;
-//	color_ = _color;
-//	shape = _shape;
-//	renderItem = _rend;
-//	_rend = new RenderItem(_shape, _color);
-//		
-//}
-//
-//void Particle::UpdateTr() {
-//
-//	this->pos.p += vel;
-//}
+
+// Método para calcular la nueva posición y velocidad de la partícula en función de la aceleración actual y el tiempo transcurrido.
+void Particle::updateMovement(double timeDelta)
+{
+    velocity += acceleration * timeDelta;       // Actualiza la velocidad basándose en la aceleración.
+    velocity *= pow(dampingFactor, timeDelta);  // Aplica la amortiguación a la velocidad.
+    position.p += velocity * timeDelta;         // Actualiza la posición basándose en la nueva velocidad.
+}
+
+// Método que actualmente duplica el comportamiento de updateMovement(). Si hay un comportamiento distinto para el disparo vertical, debería implementarse aquí.
+void Particle::performVerticalShoot(double timeDelta)
+{
+    velocity += acceleration * timeDelta;
+    velocity *= pow(dampingFactor, timeDelta);
+    position.p += velocity * timeDelta; // Básicamente el integerate de Lía colgado en las diapos
+}
+
+// Métodos de acceso (getters) y establecimiento (setters) para los miembros de la clase.
+
+RenderItem* Particle::getRenderItem() const
+{
+    return renderItem;
+}
+
+physx::PxTransform* Particle::getPosition()
+{
+    return &position;
+}
+
+bool Particle::shouldBeDestroyed() const
+{
+    return isDestroyed;
+}
+
+void Particle::markForDestruction()
+{
+    isDestroyed = true;
+}
+                
