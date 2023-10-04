@@ -64,10 +64,11 @@ void stepPhysics(bool interactive, double t)
         auto aux = it;
         ++aux;
         physx::PxTransform* trans = (*it)->getPosition();
-        if (trans->p.y < 20)
+        if (trans->p.y < 20 ||trans->p.y < -20)
         {
             delete* it;
             particles.erase(it);
+            printf("sadfw");
         }
         else
         {
