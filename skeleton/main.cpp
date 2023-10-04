@@ -128,19 +128,6 @@ void keyPress(unsigned char key, const PxTransform& camera)
         particles.push_back(particle);
         break;
     }
-    case 'Y': // Bola Mágica
-    {
-        Camera* cam = GetCamera();
-        Particle* particle = new Particle(cam->getTransform(), cam->getDir() * 10, Vector3(0, 3, 0), 0.1f, 0.9f);
-        particle->getRenderItem()->color = Vector4(0, 1, 0, 1);
-        particle->getRenderItem()->shape = CreateShape(physx::PxSphereGeometry(0.3));
-        particle->getRenderItem()->transform = particle->getPosition();
-        particle->updateMovement(0.1);
-        RegisterRenderItem(particle->getRenderItem());
-        particles.push_back(particle);
-        break;
-    }
-
     default:
         break;
     }
