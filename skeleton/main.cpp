@@ -6,14 +6,13 @@
 #include "core.hpp"
 #include "RenderUtils.hpp"
 #include "callbacks.hpp"
-#include "Particle.h"
+#include "particle.h"
+#include "ParticleGenerator.h"
 
-std::string display_text = "This is a test";
-
+using namespace std;
 using namespace physx;
 
-// Constantes para el juego
-const double DAMPING = 0.98;
+std::string display_text = "This is a test"; // Texto para visualización
 
 // Instancias globales de PhysX
 PxDefaultAllocator		gAllocator;
@@ -23,27 +22,30 @@ PxPhysics* gPhysics = NULL;
 PxMaterial* gMaterial = NULL;
 PxPvd* gPvd = NULL;
 
-// List of Particle pointers
-std::list<Particle*> particles;
+ParticleGenerator* partGen;
+list<particle*> particles;  // Lista de partículas
 PxDefaultCpuDispatcher* gDispatcher = NULL;
 PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
 
-// Inicializar el motor de física
+// Función para inicializar el motor de física de PhysX
 void initPhysics(bool interactive)
 {
     PX_UNUSED(interactive);
 
     gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
 
+    // Configuración para visualización y depuración de PhysX
     gPvd = PxCreatePvd(*gFoundation);
     PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
     gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
 
     gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
-
     gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
+    partGen = new ParticleGenerator();  // Inicializa el generador de partículas
+
+    // Configura la descripción de la escena
     PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
     gDispatcher = PxDefaultCpuDispatcherCreate(2);
@@ -53,34 +55,31 @@ void initPhysics(bool interactive)
     gScene = gPhysics->createScene(sceneDesc);
 }
 
-// Función para configurar lo que sucede en cada paso de la física
+// Función para configurar la actualización de la física en cada paso
 void stepPhysics(bool interactive, double t)
 {
     PX_UNUSED(interactive);
+    partGen->update(t);  // Actualiza el generador de partículas
 
+    // Actualiza y limpia las partículas destruidas
     auto it = particles.begin();
-    while (it != particles.end())
-    {
+    while (it != particles.end()) {
         auto aux = it;
         ++aux;
-        physx::PxTransform* trans = (*it)->getPosition();
-        if (trans->p.y < 20 ||trans->p.y < -20)
-        {
+        if ((*it)->getDestroyed()) {
             delete* it;
             particles.erase(it);
-            printf("sadfw");
         }
-        else
-        {
-            (*it)->updateMovement(t);
-        }
+        else (*it)->update(t);
         it = aux;
     }
+
+    // Simula la escena y obtiene resultados
     gScene->simulate(t);
     gScene->fetchResults(true);
 }
 
-// Función para limpiar datos
+// Función para liberar los recursos y limpiar datos
 void cleanupPhysics(bool interactive)
 {
     PX_UNUSED(interactive);
@@ -91,10 +90,7 @@ void cleanupPhysics(bool interactive)
     PxPvdTransport* transport = gPvd->getTransport();
     gPvd->release();
     transport->release();
-    for (auto& particle : particles)
-    {
-        delete particle;
-    }
+    for (auto& i : particles) delete i;
     particles.clear();
     gFoundation->release();
 }
@@ -106,27 +102,15 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
     switch (toupper(key))
     {
-    case 'R': // Bola Cañón
+    case 'F':  // Dispara un FIREBALL (bola de fuego) en la dirección de la cámara
     {
-        Camera* cam = GetCamera();
-        Particle* particle = new Particle(cam->getTransform(), cam->getDir() * 45, Vector3(0, -9.8, 0), 200.0f, DAMPING);
-        particle->getRenderItem()->color = Vector4(1, 0.5, 0, 1);
-        particle->getRenderItem()->shape = CreateShape(physx::PxSphereGeometry(1.3));
-        particle->getRenderItem()->transform = particle->getPosition();
-        RegisterRenderItem(particle->getRenderItem());
-        particles.push_back(particle);
-        break;
-    }
-
-    case 'T': // Laser
-    {
-        Camera* cam = GetCamera();
-        Particle* particle = new Particle(cam->getTransform(), cam->getDir() * 200, Vector3(0, 0, 10.0), 0.05f, DAMPING);
-        particle->getRenderItem()->color = Vector4(0, 0.5, 0, 1);
-        particle->getRenderItem()->shape = CreateShape(physx::PxSphereGeometry(0.3));
-        particle->getRenderItem()->transform = particle->getPosition();
-        RegisterRenderItem(particle->getRenderItem());
-        particles.push_back(particle);
+        Camera* camera = GetCamera();
+        double damp = 0.9f;
+        float vel = 10.0f;
+        Vector4 color = Vector4(1, 0, 0, 0.5);  // Color rojo
+        float r = 0.1f;
+        particle* p = new particle(camera->getTransform(), camera->getDir() * vel, Vector3(0, 0, 0), Vector3(0, -0.6, 0), 1.0f, damp, color, r);
+        particles.push_back(p);
         break;
     }
     default:
@@ -134,16 +118,18 @@ void keyPress(unsigned char key, const PxTransform& camera)
     }
 }
 
+// Función para manejar colisiones
 void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 {
     PX_UNUSED(actor1);
     PX_UNUSED(actor2);
+    // Actualmente vacía, puede ser ampliada para manejar eventos de colisión específicos
 }
 
 int main(int, const char* const*)
 {
 #ifndef OFFLINE_EXECUTION 
-    extern void renderLoop();
+    extern void renderLoop();  // Función externa para el bucle de renderizado
     renderLoop();
 #else
     const PxU32 frameCount = 100;
