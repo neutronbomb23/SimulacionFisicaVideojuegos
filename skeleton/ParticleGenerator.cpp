@@ -95,15 +95,18 @@ void ParticleGenerator::generate() {
     color = RandomColor();
 
     int rndgen = rand() % 3;
-    if (rndgen == 0) {
-        particle* p = new particle(pos, vel, acceleration, gravity, weight, damp, color, r);
-        partSyst->addParticle(p);
-    }
-    else {
+
+    if(rndgen %2 == 0) {
         r = 0.1f;
         vel = Vector3(0, 15, 0);
         gravity = Vector3(0, 0, 0);
         Firework* f = new Firework(pos, vel, acceleration, gravity, weight, damp, color, r, partSyst);
         partSyst->addFirework(f);
+    }
+    else {
+       camera = GetCamera();
+       particle* humito = new particle(camera->getTransform());
+       humito->setupSmoke();
+       partSyst->addParticle(humito);
     }
 }
