@@ -98,19 +98,48 @@ void cleanupPhysics(bool interactive)
 // Función llamada cuando se presiona una tecla
 void keyPress(unsigned char key, const PxTransform& camera)
 {
+    
     PX_UNUSED(camera);
-
+    Camera* cam = GetCamera();
     switch (toupper(key))
     {
     case 'F':  // Dispara un FIREBALL (bola de fuego) en la dirección de la cámara
     {
-        Camera* camera = GetCamera();
         double damp = 0.9f;
         float vel = 10.0f;
         Vector4 color = Vector4(1, 0, 0, 0.5);  // Color rojo
         float r = 0.1f;
-        particle* p = new particle(camera->getTransform(), camera->getDir() * vel, Vector3(0, 0, 0), Vector3(0, -0.6, 0), 1.0f, damp, color, r);
+        particle* p = new particle(cam->getTransform(), cam->getDir() * vel, Vector3(0, 0, 0), Vector3(0, -0.6, 0), 1.0f, damp, color, r);
         particles.push_back(p);
+        break;
+    }
+    case 'G':  // Crea una chispa en la posición de la cámara
+    {
+        particle* spark = new particle(cam->getTransform());
+        spark->setupSpark();
+        particles.push_back(spark);
+        break;
+    }
+    case 'H':  // Crea un efecto de humo en la posición de la cámara
+    {
+        particle* smoke = new particle(cam->getTransform());
+        smoke->setupSmoke();
+        particles.push_back(smoke);
+        break;
+    }
+    case 'I':
+    {
+        particle* waterBubble = new particle(cam->getTransform());
+        waterBubble->setupBubble();
+        particles.push_back(waterBubble);
+        break;
+       
+    }
+    case 'J':
+    {
+        particle* meteor = new particle(cam->getTransform());
+        meteor->setupShootingStar();
+        particles.push_back(meteor);
         break;
     }
     default:

@@ -59,7 +59,7 @@ void particle::update(double t)
 {
     integrate(t);
     lifetime += t;
-    if (p.p.y < 20 || lifetime >= 2) dest = true;
+    if (p.p.y < 20 || lifetime >= 5) dest = true;
 }
 
 // Actualiza la posición y velocidad de la partícula a lo largo del tiempo t
