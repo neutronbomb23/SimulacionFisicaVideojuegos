@@ -8,6 +8,7 @@
 #include "callbacks.hpp"
 #include "particle.h"
 #include "ParticleGenerator.h"
+#include "ParticleSystem.h"
 
 using namespace std;
 using namespace physx;
@@ -21,7 +22,7 @@ PxFoundation* gFoundation = NULL;
 PxPhysics* gPhysics = NULL;
 PxMaterial* gMaterial = NULL;
 PxPvd* gPvd = NULL;
-
+ParticleSystem* pS;
 ParticleGenerator* partGen;
 list<particle*> particles;  // Lista de partículas
 PxDefaultCpuDispatcher* gDispatcher = NULL;
@@ -44,7 +45,7 @@ void initPhysics(bool interactive)
     gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
     partGen = new ParticleGenerator();  // Inicializa el generador de partículas
-
+    pS = new ParticleSystem();
     // Configura la descripción de la escena
     PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
@@ -141,6 +142,13 @@ void keyPress(unsigned char key, const PxTransform& camera)
         meteor->setupShootingStar();
         particles.push_back(meteor);
         break;
+    }
+    case '6':
+    {
+        PxTransform pos = cam->getTransform();
+        Vector3 vel = { 0.0, 10.0, 0.0 };
+        Vector3 null = {0.0, 0.0, 0.0};
+        partGen->generateFire(pos, vel, null, null, 0.0, 0.9, Vector4(1.0, 0.0, 0.0, 1.0), 1.0, 3);
     }
     default:
         break;

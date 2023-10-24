@@ -16,6 +16,9 @@ public:
 	Vector3 UniformDirection();
 	void update(float t);
 	void generate();
+	void generatePart(PxTransform pos);
+	void generateFire(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, int gen);
+
 	Vector4 RandomColor();
 };
 

@@ -1,8 +1,9 @@
 #include "Firework.h"
 #include "ParticleSystem.h"
+#include "ParticleGenerator.h"
 
-Firework::Firework(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, ParticleSystem* pS)
-    : p(pos), v(vel), acceleration(acc), gravity(grav), mass(weight), damp(damping), partS(pS)
+Firework::Firework(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, ParticleSystem* pS, ParticleGenerator* pG, int gen)
+    : p(pos), v(vel), acceleration(acc), gravity(grav), mass(weight), damp(damping), partS(pS), generation(gen), partG(pG), r(radius)
 {
     rend = new RenderItem();
     rend->color = c;
@@ -13,19 +14,17 @@ Firework::Firework(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, floa
 
 Firework::~Firework()
 {
-    OnDie(10);
+    OnDie(2);
     DeregisterRenderItem(rend);
     delete rend;
 }
 
 void Firework::OnDie(int n) {
     Camera* camera = GetCamera();
+    Vector4 color = RandomColor();
     for (int i = 0; i < n; i++) {
-        Vector4 randomColor = RandomColor();
-        particle* part = new particle(p);
-      
-        part->setColor(randomColor);
-        partS->addParticle(part);
+        if (generation == 0) partG->generatePart(p);
+        else partG->generateFire(p, v, acceleration, gravity, mass, damp, color, r * 0.9, generation - 1);
     }
 }
 Vector4 Firework::RandomColor() {
@@ -47,7 +46,7 @@ void Firework::update(double t)
     //tiempo de vida (si es mayor que 5 segundos se borra)  
     lifetime += t;
     //comprobar si se tiene que borrar
-    if (p.p.y < 20 || lifetime >= 5) dest = true;
+    if (p.p.y < 10 || lifetime >= 5) dest = true;
 }
 
 

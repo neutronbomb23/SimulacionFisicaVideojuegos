@@ -100,7 +100,7 @@ void ParticleGenerator::generate() {
         r = 0.1f;
         vel = Vector3(0, 15, 0);
         gravity = Vector3(0, 0, 0);
-        Firework* f = new Firework(pos, vel, acceleration, gravity, weight, damp, color, r, partSyst);
+        Firework* f = new Firework(pos, vel, acceleration, gravity, weight, damp, color, r, partSyst, this, 3);
         partSyst->addFirework(f);
     }
     else {
@@ -109,4 +109,18 @@ void ParticleGenerator::generate() {
        humito->setupSmoke();
        partSyst->addParticle(humito);
     }
+}
+
+void ParticleGenerator::generatePart(PxTransform pos){
+    Vector4 randomColor = RandomColor();
+    particle* p = new particle(pos);
+    p->setColor(randomColor);
+    partSyst->addParticle(p);
+}
+
+void ParticleGenerator::generateFire(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, int gen){
+    Vector3 v = UniformDistribution(5);
+    v += vel;
+    Firework* f = new Firework(pos, v, acc, grav, weight, damping, c, radius, partSyst, this, gen);
+    partSyst->addFirework(f);
 }
