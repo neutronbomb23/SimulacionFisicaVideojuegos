@@ -14,7 +14,7 @@ Firework::Firework(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, floa
 
 Firework::~Firework()
 {
-    OnDie(2);
+    OnDie(3);
     DeregisterRenderItem(rend);
     delete rend;
 }
