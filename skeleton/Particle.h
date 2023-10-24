@@ -70,8 +70,8 @@ public:
 
     // eStrella fugaz meteorito
     void setupShootingStar() {
-        v = Vector3(RandFloat(-1.0f, 1.0f), RandFloat(-1.0f, 1.0f), RandFloat(-1.0f, 1.0f)).getNormalized() * RandFloat(20.0f, 50.0f); // Velocidad muy rápida en una dirección aleatoria. 
-        acceleration = Vector3(0, 0, 0); // Aceleración muy pequeña
+        v = Vector3(RandFloat(-1.0f, 1.0f), RandFloat(-1.0f, 1.0f), RandFloat(-1.0f, 1.0f)).getNormalized() * RandFloat(50.0f, 650.0f); // Velocidad muy rápida en una dirección aleatoria. 
+        acceleration = Vector3(0, 0, -40.0); // Aceleración muy pequeña
         gravity = Vector3(0, 0, 0); // Estrellas fugaces o meteoritos no se ven afectados por la gravedad de manera tradicional en el espacio.
         mass = 2.0f; // Más pesado que burbujas o chispas.
         damp = 1.0f; // Sin amortiguamiento en el espacio.
