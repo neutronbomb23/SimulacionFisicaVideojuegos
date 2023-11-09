@@ -261,7 +261,7 @@ void setupDefaultWindow(const char *name)
 void setupDefaultRenderState()
 {
 	// Setup default render states
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0);
+	glClearColor(0.3f, 0.4f, 0.5f, 1.0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -285,10 +285,6 @@ void setupDefaultRenderState()
 void startRender(const PxVec3& cameraEye, const PxVec3& cameraDir, PxReal clipNear, PxReal clipFar)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Display text
-	glColor4f(1.0f, 0.2f, 0.2f, 1.0f);
-	drawText(display_text, 0, 0);
 
 	// Setup camera
 	glMatrixMode(GL_PROJECTION);
@@ -381,31 +377,6 @@ void finishRender()
 {
 	glutSwapBuffers();
 }
-
-void drawText(const std::string& text, int x, int y)
-{
-	glMatrixMode(GL_PROJECTION);
-	double* matrix = new double[16];
-	glGetDoublev(GL_PROJECTION_MATRIX, matrix);
-	glLoadIdentity();
-	glOrtho(0, 512, 0, 512, -5, 5);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glPushMatrix();
-	//glLoadIdentity();
-	glRasterPos2i(x, y);
-
-	int length = text.length();
-
-	for (int i = 0; i < length; i++) {
-		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]);
-	}
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixd(matrix);
-	glMatrixMode(GL_MODELVIEW);
-}
-
 
 
 } //namespace Snippets
