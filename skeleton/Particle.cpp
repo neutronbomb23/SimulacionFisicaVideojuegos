@@ -1,71 +1,23 @@
-#include "particle.h"
+#include "Particle.h"
 
-// Constructor: Inicializa una partícula con valores proporcionados
-particle::particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius)
-    : p(pos), v(vel), acceleration(acc), gravity(grav), mass(weight), damp(damping)
+// Constructor implementation.
+Particle::Particle(Vector3 Pos, Vector3 Vel) : vel(Vel)
 {
-    rend = new RenderItem();
-    rend->color = c;
-    rend->shape = CreateShape(physx::PxSphereGeometry(radius));
-    rend->transform = &p;
-    RegisterRenderItem(rend);
+    position = physx::PxTransform(Pos.x, Pos.y, Pos.z); // Set the initial position of the particle.
+    // Create a render item with a sphere geometry, link it to the position, and give it a color.
+    renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(0.5)), &position, { 0.0, 8.0, 5.0, 1 });
 }
 
-// Constructor: Inicializa una partícula en una posición dada como tipo láser
-particle::particle(PxTransform pos)
-    : p(pos)
+// Destructor implementation.
+Particle::~Particle()
 {
-    setupLaser();
-    rend = new RenderItem();
-    rend->color = color;
-    rend->shape = CreateShape(physx::PxSphereGeometry(radius));
-    rend->transform = &p;
-    RegisterRenderItem(rend);
+    // Remove the render item from the scene to prevent it from being rendered after destruction.
+    DeregisterRenderItem(renderItem);
 }
 
-// Configura la partícula con propiedades de láser
-void particle::setupLaser() {
-    v = RandVect(25);
-    acceleration = Vector3(0, 0, 0);
-    gravity = Vector3(0, -0.2, 0);
-    mass = 1.0f;
-    damp = 0.9f;
-    color = Vector4(1, 1, 1, 1);
-    radius = 0.3f;
-}
-
-// Genera un vector con valores aleatorios entre -size/2 y size/2
-Vector3 particle::RandVect(int size) {
-    return Vector3(rand() % size - (size / 2), rand() % size - (size / 2), rand() % size - (size / 2));
-}
-
-// Destructor: Libera los recursos asociados a la partícula
-particle::~particle()
+// Integrate implementation: updates the particle's position based on its velocity and time step.
+void Particle::integrate(double t)
 {
-    DeregisterRenderItem(rend);
-    delete rend;
-}
-
-// Actualiza el color de la partícula y el RenderItem asociado
-void particle::setColor(const Vector4& newColor) {
-    color = newColor;
-    if (rend) {
-        rend->color = color;
-    }
-}
-
-// Actualiza la partícula basándose en el paso del tiempo
-void particle::update(double t)
-{
-    integrate(t);
-    lifetime += t;
-    if (p.p.y < 20 || lifetime >= 5) dest = true;
-}
-
-// Actualiza la posición y velocidad de la partícula a lo largo del tiempo t
-void particle::integrate(double t)
-{
-    p.p += v * t;
-    v += (gravity + acceleration) * t;
-    v *= pow(damp, t);
+    // Calculate new position using the velocity and time step, then update the transform.
+    position = physx::PxTransform(position.p.x + vel.x * t, position.p.y + vel.y * t, position.p.z + vel.z * t);
 }
