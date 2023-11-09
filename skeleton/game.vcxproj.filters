@@ -10,7 +10,10 @@
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="callbacks.cpp" />
-    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="particle.cpp" />
+    <ClCompile Include="ParticleGenerator.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="Firework.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -22,7 +25,10 @@
     </ClInclude>
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="callbacks.hpp" />
-    <ClInclude Include="Particle.h" />
+    <ClInclude Include="particle.h" />
+    <ClInclude Include="ParticleGenerator.h" />
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Firework.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
