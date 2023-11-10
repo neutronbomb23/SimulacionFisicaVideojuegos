@@ -1,0 +1,11 @@
+﻿  Particle.cpp
+  main.cpp
+C:\Users\sofsa\OneDrive\Escritorio\Trabajos de Sofía\Tercero de carrera\Física\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen Particle.cpp)
+C:\Users\sofsa\OneDrive\Escritorio\Trabajos de Sofía\Tercero de carrera\Física\common\PhysX-3.4\PxShared\include\task\PxTask.h(326,19): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen Particle.cpp)
+C:\Users\sofsa\OneDrive\Escritorio\Trabajos de Sofía\Tercero de carrera\Física\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen main.cpp)
+C:\Users\sofsa\OneDrive\Escritorio\Trabajos de Sofía\Tercero de carrera\Física\common\PhysX-3.4\PxShared\include\task\PxTask.h(326,19): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen main.cpp)
+C:\Users\sofsa\OneDrive\Escritorio\Trabajos de Sofía\Tercero de carrera\Física\skeleton\main.cpp(130,18): warning C4239: se ha utilizado una extensión no estándar: 'inicializando': conversión de 'Vector4' a 'Vector4 &'
+C:\Users\sofsa\OneDrive\Escritorio\Trabajos de Sofía\Tercero de carrera\Física\skeleton\main.cpp(130,18): message : Una referencia que no es const solamente se puede enlazar a un valor L
+  game.vcxproj -> C:\Users\sofsa\OneDrive\Escritorio\Trabajos de Sofía\Tercero de carrera\Física\bin\game.exe
