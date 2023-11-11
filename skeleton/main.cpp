@@ -191,7 +191,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 #pragma region Apply Burst to All Particles
 	case 'B':
-		partGen->getSystem()->applyVentiscaToAllParticles();
+		partGen->getSystem()->applyTornadoToAllParticles();
 		break;
 #pragma endregion
 
