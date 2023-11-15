@@ -17,7 +17,7 @@ void VortexForceGenerator::updateForce(Particle* p, double t) {
 
 //Vector3 VortexForceGenerator::calc(Vector3 c, Vector3 p) {
 //	 //Reducir el valor de K para disminuir la velocidad del torbellino
-//	const float K = 2.0f; 
+//	const float K = 0.01f; 
 //
 //	 //Calcula la dirección tangencial del viento
 //	Vector3 direction = Vector3(-(p.z - c.z), 50 - (p.y - c.y), p.x - c.x);

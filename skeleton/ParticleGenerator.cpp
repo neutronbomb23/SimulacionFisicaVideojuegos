@@ -107,12 +107,7 @@ PxGeometry* ParticleGenerator::chooseRandomGeometry() {
             static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f)),
             static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f))
         );
-    case 3: // Cylinder (approximated with a capsule with a large height)
-        return new PxCapsuleGeometry(
-            static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 4.0f)), // Smaller radius
-            static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f)) // Larger height
-        );
-    case 4: // Cone (approximated with a box with a shorter dimension)
+    case 3: // Cone (approximated with a box with a shorter dimension)
         return new PxBoxGeometry(
             static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f)),
             static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 4.0f)), // Shorter dimension for the "tip"

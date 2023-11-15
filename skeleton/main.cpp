@@ -189,15 +189,27 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		break;
 #pragma endregion
 
-#pragma region Apply Burst to All Particles
-	case 'B':
+#pragma region Apply tornad to All Particles
+	case 'T':
 		partGen->getSystem()->applyTornadoToAllParticles();
 		break;
 #pragma endregion
 
+#pragma region Apply Viennto to All Particles
+	case 'V':
+		partGen->getSystem()->applyVentiscaToAllParticles();
+		break;
+#pragma endregion
+
 #pragma region Apply Gravity to All Particles
-	case 'N':
+	case 'G':
 		partGen->getSystem()->applyGravityToAllParticles();
+		break;
+#pragma endregion
+
+#pragma region Apply PSOE 11M  to All Particles
+	case 'E':
+		partGen->getSystem()->applyBurstToAllParticles();
 		break;
 #pragma endregion
 
