@@ -15,7 +15,7 @@ ParticleGenerator::~ParticleGenerator() {
 // Update the particle generator and system each frame
 void ParticleGenerator::updateEveryFrame(float timeElapsed) {
     generationTimer += timeElapsed;
-    if (generationTimer >= 0.01f && isGenerating) {
+    if (generationTimer >= 0.0000000001f && isGenerating) {
         createParticle();
         generationTimer = 0.0f;
     }
@@ -74,7 +74,7 @@ void ParticleGenerator::createParticle() {
         //p->massS = s->getGeometry().sphere.radius * 10; // Ajusta la masa basándose en el radio si es una esfera 
         // DA ERROR! PREGUNTAR A RAÚL
         // Asigna una masa aleatoria a la partícula // Ahora ya no da error lo de abajo
-        float randomMassva = randomMass(1.0f, 10.0f);
+        float randomMassva = randomMass(0.01f, 100.0f);
         p->massS = randomMassva;
 
         particleSystem->addNewParticle(p);

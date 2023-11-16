@@ -1,18 +1,22 @@
 #include "VortexForceGenerator.h"
 
+// Updates the force on a particle according to the vortex behavior
 void VortexForceGenerator::updateForce(Particle* p, double t) {
-	// Check that the particle has Finite Mass
-    if (fabs(p->inverse_massS) == 0)return;
-    Camera* camera = GetCamera(); 
-    
-	
+    // Check that the particle has finite mass to avoid division by zero
+    if (fabs(p->inverse_massS) == 0) return;
+
+    // Obtain the camera instance to get its position
+    Camera* camera = GetCamera();
+
+    // Calculate the center of the vortex relative to the camera's position
     Vector3 c = Vector3(camera->getTransform().p.x + 150, camera->getTransform().p.y - 150, camera->getTransform().p.z - 150);
-	
-   
-	
-	Vector3 pos = p->getTransform()->p;
-	Vector3 vortexForce = K * calc(c, pos);
-	p->addForce(vortexForce);
+
+    // Get the position of the particle
+    Vector3 pos = p->getTransform()->p;
+
+    // Calculate the vortex force and apply it to the particle
+    Vector3 vortexForce = K * calc(c, pos);
+    p->addForce(vortexForce);
 }
 
 //Vector3 VortexForceGenerator::calc(Vector3 c, Vector3 p) {
@@ -26,20 +30,22 @@ void VortexForceGenerator::updateForce(Particle* p, double t) {
 //	return K * direction;
 //}
 
-//TORBELLINO ES ESPIRAL
-Vector3 VortexForceGenerator::calc(Vector3 c, Vector3 p) {
-    const float K = 50.0f; // Constante de fuerza del torbellino
 
-  /*   Calcula la diferencia en posición y la distancia al centro del torbellino*/
+//Torbellino en espiral
+// Calculates the vortex force based on the position of the center and the particle
+Vector3 VortexForceGenerator::calc(Vector3 c, Vector3 p) {
+    const float K = 50.0f; // Constant for vortex force strength
+
+    // Calculate the difference in position and the distance to the vortex center
     Vector3 diff = p - c;
     float distance = diff.magnitude();
 
-     /*Evita la división por cero y aplica una fuerza decreciente con la distancia*/
+    // Prevent division by zero and apply force decreasing with distance
     if (distance < 1.0f) {
-        distance = 1.0f; // Establece un mínimo para evitar divisiones por cero
+        distance = 1.0f; // Set a minimum to avoid divisions by zero
     }
-    float strength = K / distance; // La fuerza disminuye con la distancia
+    float strength = K / distance; // Force decreases as the distance increases
 
-    /* Aplica la fuerza en una dirección tangencial*/
+    // Apply the force in a tangential direction to create a vortex effect
     return strength * Vector3(-(p.y - c.y), (p.z - c.z), -(p.x - c.x));
 }

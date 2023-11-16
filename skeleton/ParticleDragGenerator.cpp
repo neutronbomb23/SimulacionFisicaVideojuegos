@@ -1,18 +1,18 @@
 #include "ParticleDragGenerator.h"
 #include <iostream>
 
-void ParticleDragGenerator :: updateForce(Particle* particle, double t) {
-	// Check that the particle has Finite Mass
-	if (fabs(particle->inverse_massS) < 1e-10)return;
+// Implementation of the updateForce method
+void ParticleDragGenerator::updateForce(Particle* particle, double t) {
+    // Check that the particle has finite mass to avoid division by zero
+    if (fabs(particle->inverse_massS) < 1e-10) return;
 
-	// Compute the drag force
-	Vector3 v = particle->getVel();
-	float drag_coef = v.normalize();
-	Vector3 dragF;
-	drag_coef = _k1 * drag_coef + _k2 * drag_coef * drag_coef;
-	dragF = -v * drag_coef;
+    // Compute the drag force
+    Vector3 v = particle->getVel(); // Get particle velocity
+    float drag_coef = v.normalize(); // Normalize the velocity and get its magnitude
+    Vector3 dragF; // Variable to store drag force
+    drag_coef = _k1 * drag_coef + _k2 * drag_coef * drag_coef; // Calculate drag coefficient
+    dragF = -v * drag_coef; // Calculate drag force
 
-	// Apply the drag
-	cout << dragF.x << "\t" << dragF.y << "\t" << dragF.z << endl;
-	particle->addForce(dragF);
+    // Apply the drag force to the particle
+    particle->addForce(dragF);
 }
