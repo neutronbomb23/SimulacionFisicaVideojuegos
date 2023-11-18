@@ -14,6 +14,9 @@ ParticleSystem::~ParticleSystem() {
 
 // Update method: Called each frame to update particles and fireworks
 void ParticleSystem::performUpdate(float duration) {
+    if (areForcesActive) {
+        forceRegistry->updateForces(duration);
+    }
     auto particleIt = particleList.begin();
     while (particleIt != particleList.end()) {
         auto nextIt = particleIt;
@@ -31,9 +34,7 @@ void ParticleSystem::performUpdate(float duration) {
 
    
 
-    if (areForcesActive) {
-        forceRegistry->updateForces(duration);
-    }
+    
 }
 
 // Add a new particle to the system
@@ -85,8 +86,9 @@ void ParticleSystem::applyGravityForce(Particle* particle) {
     float simulatedVelocity = particle->getVelS(); // Simulated velocity in m/s
     float realVelocity = particle->getVelR(); // Real velocity in m/s
     Vector3 realGravity = Vector3(0, -9.8f, 0); // Real gravity
+    Vector3 lunarGravity = Vector3(0, -1.63f, 0); // Gravedad lunar
     Vector3 simulatedGravity = realGravity * powf((simulatedVelocity / realVelocity), 2); // Simulated gravity
-    GravityForceGenerator* gravity = new GravityForceGenerator(simulatedGravity);
+    GravityForceGenerator* gravity = new GravityForceGenerator(lunarGravity);
     forceRegistry->addRegistry(gravity, particle);
 }
 
@@ -120,7 +122,7 @@ void ParticleSystem::clearAllParticles() {
 
 // Apply burst force to a single particle
 void ParticleSystem::applyBurstForce(Particle* particle) {
-    float explosionForceConstant = 1000; // Explosion force constant
+    float explosionForceConstant = 100; // Explosion force constant
     float range = 1500; // Range of the burst effect
     float duration = 2; // Duration of the effect
     BurstForceGenerator* burst = new BurstForceGenerator(explosionForceConstant, range, duration);
