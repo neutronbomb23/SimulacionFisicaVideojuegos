@@ -14,11 +14,20 @@
     <ClCompile Include="FireWork.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="ForceGenerator.cpp" />
     <ClCompile Include="GravityForceGenerator.cpp" />
+    <ClCompile Include="ParticleForceRegistry.cpp" />
     <ClCompile Include="ParticleDragGenerator.cpp" />
     <ClCompile Include="WindForceGenerator.cpp" />
     <ClCompile Include="VortexForceGenerator.cpp" />
     <ClCompile Include="BurstForceGenerator.cpp" />
+    <ClCompile Include="AnchoredSpringFG.cpp" />
+    <ClCompile Include="SpringForceGenerator.cpp" />
+    <ClCompile Include="BouyancyForceGenerator.cpp" />
+    <ClCompile Include="RigidBodyGenerator.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="RigidBodyForceRegistry.cpp" />
+    <ClCompile Include="RigidBodySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -41,6 +50,13 @@
     <ClInclude Include="WindForceGenerator.h" />
     <ClInclude Include="VortexForceGenerator.h" />
     <ClInclude Include="BurstForceGenerator.h" />
+    <ClInclude Include="AnchoredSpringFG.h" />
+    <ClInclude Include="SpringForceGenerator.h" />
+    <ClInclude Include="BouyancyForceGenerator.h" />
+    <ClInclude Include="RigidBodyGenerator.h" />
+    <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="RigidBodyForceRegistry.h" />
+    <ClInclude Include="RigidBodySystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

@@ -1,18 +1,19 @@
 #include <ctype.h>
+
 #include <PxPhysicsAPI.h>
-#include <cstdlib> // For rand() and srand()
-#include <ctime>   // For time()
+
 #include <vector>
 #include <list>
 #include "Particle.h"
 #include "ParticleGenerator.h"
+#include "RigidBodySystem.h"
 #include "core.hpp"
 #include "RenderUtils.hpp"
 #include "callbacks.hpp"
 
 #include <iostream>
 
-std::string display_text = "This is a test";
+std::string display_text = "";
 
 
 using namespace physx;
@@ -35,17 +36,9 @@ PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 Particle* part = nullptr;
 ParticleGenerator* partGen = nullptr;
+RigidBodySystem* RBSys = nullptr;
 list<Particle*> shots;
 
-// Generates a random float between -1.0 and 1.0
-float randomFloat() {
-	return static_cast<float>(rand()) / static_cast<float>(RAND_MAX / 2.0f) - 1.0f;
-}
-
-// Generates a random direction
-Vector3 randomDirection() {
-	return Vector3(randomFloat(), randomFloat(), randomFloat()).getNormalized();
-}
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -56,13 +49,11 @@ void initPhysics(bool interactive)
 
 	gPvd = PxCreatePvd(*gFoundation);
 	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-	gPvd->connect(*transport,PxPvdInstrumentationFlag::eALL);
+	gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
 
-	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(),true,gPvd);
+	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-
-	partGen = new ParticleGenerator();
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
@@ -72,7 +63,17 @@ void initPhysics(bool interactive)
 	sceneDesc.filterShader = contactReportFilterShader;
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
-	}
+
+	//platform
+	PxRigidStatic* platform = gPhysics->createRigidStatic(PxTransform{ 0,0,0 });
+	PxShape* shape = CreateShape(PxBoxGeometry(100, 0.1, 100));
+	platform->attachShape(*shape);
+	gScene->addActor(*platform);
+	RenderItem* item = new RenderItem(shape, platform, { 0.0,0.3,0.0,1 });
+
+	partGen = new ParticleGenerator();
+	RBSys = new RigidBodySystem(gScene, gPhysics);
+}
 
 
 // Function to configure what happens in each step of physics
@@ -98,7 +99,10 @@ void stepPhysics(bool interactive, double t)
 		it = aux;
 	}
 
-	partGen->updateEveryFrame(t);
+	partGen->update(t);
+	RBSys->update(t);
+
+
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 }
@@ -127,103 +131,47 @@ void cleanupPhysics(bool interactive)
 
 }
 
-/// Function called when a key is pressed
+// Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
 {
 	PX_UNUSED(camera);
 
-	switch (toupper(key))
+	switch(toupper(key))
 	{
-#pragma region Toggle Particle Generation
-	case 'X':
-	case 'C':
-		partGen->toggleGeneration();
+	case '6':
+		partGen->getSys()->generateSpringDemo(partGen->getSys()->ANCHORED);
 		break;
-#pragma endregion
-
-#pragma region Create a Shooting Star
-	case '1':
-	{
-		Camera* cam = GetCamera();
-
-		PxShape* s = CreateShape(PxSphereGeometry(2));
-		PxTransform tr = cam->getTransform();
-		Vector3 vel = randomDirection() * 200; // Random direction with a fixed speed
-		Vector3 acc = Vector3(0, 0, 0);
-		Vector3 gS = Vector3(0, -0.02245925758, 0);
-		float damp = 0.95;
-		Vector4& color = Vector4(1, 0.9, 0.1, 1);
-
-		Particle* shootingStar = new Particle(s, tr, vel, acc, gS, damp, color);
-		shootingStar->getRenderItem()->transform = shootingStar->getTransform();
-		RegisterRenderItem(shootingStar->getRenderItem());
-		shots.push_back(shootingStar);
+	case 'K':
+		partGen->getSys()->addK(10);
+		break;	
+	case '7':
+		partGen->getSys()->generateSpringDemo(partGen->getSys()->SPRING);
 		break;
-	}
-#pragma endregion
-
-#pragma region Create a Bubble
-	case '2':
-	{
-		Camera* cam = GetCamera();
-
-		PxShape* s = CreateShape(PxSphereGeometry(3)); // Larger and more visible
-		PxTransform tr = cam->getTransform();
-		Vector3 vel = Vector3(0, 25, 0); // Slow upward movement
-		Vector3 acc = Vector3(0, 5, 0); // Slight upward acceleration to simulate buoyancy
-		Vector3 gS = Vector3(0, -0.02245925758, 0); // Simulated gravity
-		float damp = 0.99; // Low damping to allow floating effect
-		Vector4& color = Vector4(0.7, 0.8, 1, 0.5); // Light blue, semi-transparent
-
-		Particle* bubble = new Particle(s, tr, vel, acc, gS, damp, color);
-		bubble->getRenderItem()->transform = bubble->getTransform();
-		RegisterRenderItem(bubble->getRenderItem());
-		shots.push_back(bubble);
+	case '8':
+		partGen->getSys()->generateSpringDemo(partGen->getSys()->FLOTABILITY);
 		break;
-	}
-#pragma endregion
-
-#pragma region Toggle Particle Forces
-	case 'L':
-		partGen->getSystem()->toggleParticleForces();
+	case '9':
+		partGen->getSys()->generateBuoyancy();
 		break;
-#pragma endregion
-
-#pragma region Apply tornad to All Particles
-	case 'T':
-		partGen->getSystem()->applyTornadoToAllParticles();
-		break;
-#pragma endregion
-
-#pragma region Apply Viennto to All Particles
-	case 'V':
-		partGen->getSystem()->applyVentiscaToAllParticles();
-		break;
-#pragma endregion
-
-#pragma region Apply Gravity to All Particles
-	case 'G':
-		partGen->getSystem()->applyGravityToAllParticles();
-		break;
-#pragma endregion
-
-#pragma region Apply PSOE 11M  to All Particles
 	case 'E':
-		partGen->getSystem()->applyBurstToAllParticles();
+		RBSys->addExplosion();
 		break;
-#pragma endregion
 
-#pragma region delete all particles
-	case 'U':
-		partGen->getSystem()->clearAllParticles();
+	// P5 de los rigidos solidos papu
+	case 'X':
+		RBSys->createGenerators(g_sphere);
 		break;
-#pragma endregion
-		
+	case 'C':
+		RBSys->createGenerators(g_cube);
+		break;
+	case 'V':
+		RBSys->shootRB();
+		break;
+
 	default:
 		break;
 	}
 }
-
 
 void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 {

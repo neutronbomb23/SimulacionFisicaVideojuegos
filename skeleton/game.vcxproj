@@ -253,22 +253,33 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnchoredSpringFG.cpp" />
+    <ClCompile Include="BouyancyForceGenerator.cpp" />
     <ClCompile Include="BurstForceGenerator.cpp" />
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="FireWork.cpp" />
+    <ClCompile Include="ForceGenerator.cpp" />
     <ClCompile Include="GravityForceGenerator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleDragGenerator.cpp" />
+    <ClCompile Include="ParticleForceRegistry.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Render.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="RigidBodyForceRegistry.cpp" />
+    <ClCompile Include="RigidBodyGenerator.cpp" />
+    <ClCompile Include="RigidBodySystem.cpp" />
+    <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="VortexForceGenerator.cpp" />
     <ClCompile Include="WindForceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnchoredSpringFG.h" />
+    <ClInclude Include="BouyancyForceGenerator.h" />
     <ClInclude Include="BurstForceGenerator.h" />
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="core.hpp" />
@@ -283,6 +294,11 @@
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Render.h" />
+    <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="RigidBodyForceRegistry.h" />
+    <ClInclude Include="RigidBodyGenerator.h" />
+    <ClInclude Include="RigidBodySystem.h" />
+    <ClInclude Include="SpringForceGenerator.h" />
     <ClInclude Include="VortexForceGenerator.h" />
     <ClInclude Include="WindForceGenerator.h" />
   </ItemGroup>

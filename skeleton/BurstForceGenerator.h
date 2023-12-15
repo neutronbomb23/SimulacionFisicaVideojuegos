@@ -1,19 +1,18 @@
 #pragma once
 #include "ForceGenerator.h"
-#define M_PI 3.14159265358979323846
-
-
-class BurstForceGenerator : public ForceGenerator {
+#include "RigidBody.h"
+const double e = 2.7182818284;
+class BurstForceGenerator :
+    public ForceGenerator
+{
 public:
-    BurstForceGenerator(const float k, const float r, const float t) : intensity(k), radius(r), timeConstant(t) {}
-
+    BurstForceGenerator(const float k, const float r, const float t) : K(k), R(r), T(t) {}
     virtual void updateForce(Particle* particle, double t);
-
+    void updateForce(RigidBody* rb, double t);
 protected:
-    float intensity; // Intensity of the explosion
-    float timeConstant; // Time constant for the force application
-    float radius; // Radius of the explosion effect
-
-private:
-    float calculateDistance(Vector3 center, Vector3 position);
+    float K;
+    float T;
+    float R;
+    float calcR(Vector3 c, Vector3 p);
 };
+

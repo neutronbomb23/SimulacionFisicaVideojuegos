@@ -36,7 +36,7 @@ Firework::~Firework()
             angle = (360 / r) * i;
             dir = Vector3(cos(angle * pi / 180), sin(angle * pi / 180), 1);
             Particle* part = new Particle(trans, dir);
-            partS->addNewParticle(part);
+            partS->addParticle(part);
         }
     }
     else {
@@ -44,7 +44,7 @@ Firework::~Firework()
             angle = (360 / r) * i;
             dir = Vector3(cos(angle * pi / 180), sin(angle * pi / 180), 1);
             Firework* fire = new Firework(trans, dir, gen + 1, partS);
-            partS->addNewFirework(fire);
+            partS->addFirework(fire);
         }
     }
     DeregisterRenderItem(rend);
@@ -54,9 +54,7 @@ Firework::~Firework()
 void Firework::update(double t)
 {
     integrate(t);
-    //tiempo de vida (si es mayor que 5 segundos se borra)  
     lifetime += t;
-    //comprobar si se tiene que borrar
     if (lifetime >= 5) dest = true;
 }
 
