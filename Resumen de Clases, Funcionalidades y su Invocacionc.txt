@@ -1,0 +1,35 @@
+Resumen de Clases, Funcionalidades y su Invocación en main.cpp
+
+Clase RigidBody
+Funcionalidad: Representa un cuerpo rígido en la simulación física.
+Invocación en main.cpp: No se invoca directamente en main.cpp, pero se utiliza dentro de otras clases como RigidBodyGenerator.
+
+Clase RigidBodyGenerator
+Funcionalidad: Genera cuerpos rígidos en la simulación.
+Invocación en main.cpp: Se utiliza en RigidBodySystem para la generación de cuerpos rígidos.
+
+Clase RigidBodyForceRegistry
+Funcionalidad: Gestiona las fuerzas aplicadas a los cuerpos rígidos.
+Invocación en main.cpp: Se usa dentro de RigidBodySystem para actualizar las fuerzas en cada paso de la simulación.
+
+Clase RigidBodySystem
+Funcionalidad: Controla la creación, actualización y eliminación de cuerpos rígidos en la simulación.
+
+Instanciación en main.cpp:
+RBSys = new RigidBodySystem(gScene, gPhysics); - Crea una instancia de RigidBodySystem.
+RBSys->update(t); - Actualiza el estado del sistema de cuerpos rígidos.
+RBSys->addExplosion(); - Se utiliza para añadir una explosión.
+RBSys->createGenerators(g_sphere); y similares - Se utilizan para crear generadores de cuerpos rígidos.
+RBSys->shootRB(); - Se utiliza para disparar un cuerpo rígido.
+
+Funciones Principales en main.cpp
+initPhysics(bool interactive): Inicializa la simulación física, creando los objetos necesarios como RigidBodySystem.
+stepPhysics(bool interactive, double t): Actualiza la simulación en cada paso, incluyendo la actualización de RigidBodySystem.
+cleanupPhysics(bool interactive): Limpia y libera los recursos al finalizar la simulación.
+keyPress(unsigned char key, const PxTransform& camera): Maneja las entradas del teclado para controlar diferentes aspectos de la simulación, como la creación de cuerpos rígidos y la aplicación de explosiones. Con la tecla z,x y v.
+
+Flujo de Trabajo en main.cpp
+Inicialización: initPhysics se encarga de configurar la simulación física, incluyendo la creación de la instancia de RigidBodySystem.
+Bucle de Simulación: stepPhysics se llama en cada frame para actualizar la simulación, incluyendo la actualización de los cuerpos rígidos a través de RigidBodySystem.
+Manejo de Entradas: keyPress permite interactuar con la simulación, como añadir explosiones o generar cuerpos rígidos.
+Limpieza: cleanupPhysics se llama al final para liberar los recursos utilizados.
