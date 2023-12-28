@@ -36,6 +36,7 @@ public:
 	void quitaBurst();
 	void generateSpringDemo(SpringType type);
 	void generateBuoyancy();
+	void generateRedRectangles();
 	void addK(int k);
 	ParticleForceRegistry* getPartRegis() { return partRgis; }
 protected:

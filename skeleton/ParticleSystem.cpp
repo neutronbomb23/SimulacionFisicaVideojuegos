@@ -201,3 +201,25 @@ void ParticleSystem::generateBuoyancy() {
     particles.push_back(p3);
     partRgis->addRegistry(water, p3);
 }
+
+void ParticleSystem::generateRedRectangles() {
+    Vector4 redColor = Vector4(1, 0, 0, 1); // Color rojo
+    Vector3 rectangleSize = Vector3(5, 1, 3); // Dimensiones del rectángulo
+    Vector3 startPosition(0, 0, 0); // Posición inicial de los rectángulos
+
+    for (int i = 0; i < 5; ++i) {
+        // Calcula la posición de cada rectángulo
+        Vector3 position = startPosition + Vector3(0, i * 2, 0); // Ajusta la separación vertical
+
+        // Crea la forma del rectángulo
+        PxShape* rectangleShape = CreateShape(PxBoxGeometry(rectangleSize.x, rectangleSize.y, rectangleSize.z));
+
+        // Crea la transformación con la posición
+        PxTransform transform(position.x, position.y, position.z);
+
+        // Crea la partícula y la añade al sistema
+        Particle* rectangle = new Particle(rectangleShape, transform, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, redColor, this);
+        RegisterRenderItem(rectangle->getRenderItem()); // Si tienes un sistema de renderizado
+        particles.push_back(rectangle);
+    }
+}
