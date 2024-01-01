@@ -1,5 +1,5 @@
 #include "ParticleSystem.h"
-
+#include <random> 
 ParticleSystem::~ParticleSystem() {
     for (auto& i : particles) delete i; 
     for (auto& j : fireworks) delete j;
@@ -221,5 +221,46 @@ void ParticleSystem::generateRedRectangles() {
         Particle* rectangle = new Particle(rectangleShape, transform, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, redColor, this);
         RegisterRenderItem(rectangle->getRenderItem()); // Si tienes un sistema de renderizado
         particles.push_back(rectangle);
+    }
+}
+
+void ParticleSystem::generateRoadParticles() {
+    Vector4 particleColor = Vector4(1, 0, 0, 1); // Color rojo para las partículas
+    float particleSize = 1.0f; // Tamaño de las partículas
+    int numParticles = 200; // Número de partículas a lo largo de la carretera
+    float randomness = 10.0f; // Grado de aleatoriedad en la posición de las partículas
+    Vector3 gravity = Vector3(0, -0.00009f, 0); // Fuerza de la gravedad
+
+    // Parámetros de la elipse de la carretera
+    float a = 100.0f; // Semieje mayor
+    float b = 50.0f; // Semieje menor
+    Vector3 center = Vector3(-100, 0, 0); // Centro de la elipse
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-randomness, randomness);
+
+    for (int i = 0; i < numParticles; i++) {
+        float angle = static_cast<float>(i) / numParticles * 2.0f * M_PI; // Ángulo en radianes
+        float x = center.x + a * cos(angle) + dis(gen);
+        float y = center.y + dis(gen);
+        float z = center.z + b * sin(angle) + dis(gen);
+
+        Vector3 position = Vector3(x, y, z);
+
+        // Crea la forma y la transformación para la partícula
+        PxShape* particleShape = CreateShape(PxSphereGeometry(particleSize));
+        PxTransform transform(position.x, position.y, position.z);
+
+        // Crea la partícula y la añade al sistema
+        Particle* roadParticle = new Particle(particleShape, transform, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, particleColor, this);
+        RegisterRenderItem(roadParticle->getRenderItem());
+
+        // Añade la partícula al sistema
+        particles.push_back(roadParticle);
+
+        // Crea y añade el generador de fuerza de gravedad para esta partícula
+        GravityForceGenerator* gravityGenerator = new GravityForceGenerator(gravity);
+        partRgis->addRegistry(gravityGenerator, roadParticle);
     }
 }

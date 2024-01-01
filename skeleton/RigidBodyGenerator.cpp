@@ -20,12 +20,6 @@ list<RigidBody*> RigidBodyGenerator::generateBodies() {
 
             RigidBody* rb = new RigidBody(scene, physics, position, velocity, Vector3(0, 0, 0), particulaNormal->getMass(), particulaNormal->getLifeTime(), particulaNormal->getShape(), particulaNormal->getColor());
 
-            //// Apply each force generator to the new rigid body
-            //for (auto& fg : forceGenerators) {
-            //    // Assuming you have a global force registry available
-            //    GlobalForceRegistry.addRegistry(fg, rb);
-            //}
-
             listRB.push_back(rb);
         }
         NxtGen = timeforNext;

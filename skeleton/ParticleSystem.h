@@ -11,6 +11,7 @@
 #include "AnchoredSpringFG.h"
 #include "BouyancyForceGenerator.h"
 using namespace std;
+const double M_PI = 3.14159265358979323846;
 
 class ParticleSystem
 {
@@ -37,6 +38,7 @@ public:
 	void generateSpringDemo(SpringType type);
 	void generateBuoyancy();
 	void generateRedRectangles();
+	void generateRoadParticles();
 	void addK(int k);
 	ParticleForceRegistry* getPartRegis() { return partRgis; }
 protected:

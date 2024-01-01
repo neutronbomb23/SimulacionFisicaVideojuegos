@@ -6,6 +6,7 @@ RigidBodySystem::RigidBodySystem(PxScene* Scene, PxPhysics* Physics)
     forceRegistry = new RigidBodyForceRegistry();
 }
 
+
 // Update method called every frame to update the system's state.
 void RigidBodySystem::update(double t) {
     // Iterate over all rigid body generators to generate and update bodies.
@@ -98,6 +99,20 @@ void RigidBodySystem::createGenerators(GeneratorType T) {
     }
 }
 
+void RigidBodySystem::createRoadParticles() {
+    Vector3 startPosition = Vector3(-100, 0, 0); // Posición de inicio de la carretera
+    Vector3 direction = Vector3(1, 0, 0); // Dirección de la carretera
+    float particleSpacing = 10.0f; // Espaciado entre partículas
+    int numParticles = 20; // Número de partículas para simular la carretera
+    Vector4 roadColor = Vector4(1, 0, 0, 1); // Color rojo para la carretera
+
+    for (int i = 0; i < numParticles; i++) {
+        Vector3 position = startPosition + direction * (i * particleSpacing);
+        RigidBody* roadParticle = new RigidBody(scene, physics, position, Vector3(0, 0, 0), Vector3(0, 0, 0), 1, 20, s_cube, roadColor);
+        roadParticle->setMass(0.0f); // Las partículas de la carretera podrían ser estáticas
+        rbs.push_back(roadParticle);
+    }
+}
 
 
 
@@ -106,7 +121,7 @@ void RigidBodySystem::shootRB() {
     Camera* cam = GetCamera();
     Vector4 randomColor = generateRandomColor();
     Vector3 pos = cam->getEye() + cam->getDir();
-    Vector3 dir = cam->getDir() * 15;
+    Vector3 dir = cam->getDir() * 1005;
     RigidBody* particulaNormal = new RigidBody(scene, physics, pos, dir, Vector3(0, 0, 0), 1, 20, s_cube, randomColor);
     rbs.push_back(particulaNormal);
 }

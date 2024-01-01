@@ -19,9 +19,11 @@ enum GeneratorType { g_sphere, g_capsule, g_cube, g_cylinder, g_cone, g_pyramid,
 
 class RigidBodySystem {
 protected:
+	list<RigidBody*> bolosToDelete;
 	PxScene* scene;
 	PxPhysics* physics;
-
+	bool hit;
+	float hitTimer;
 	int numRB;
 	list<RigidBody*> rbs;
 	list<RigidBody*> rbsToDelete;
@@ -31,16 +33,66 @@ protected:
 	list<ForceGenerator*> forceGenerators;
 
 public:
-
+	RigidBody* controlParticle;
+	// Método adicional para manejar colisiones
+	void checkCollisions();
 	void createGenerators(GeneratorType T);
 	void shootRB();
+	void createRoadParticles();
 	void addExplosion() {
 		BurstForceGenerator* megumin = new BurstForceGenerator(4000, 2000, 5); // radio y tiempo
 		for (auto rb : rbs)
 			forceRegistry->addRegistry(megumin, rb);
 	}
-	// Métodos para generar patrones de bolos
-	
+
+	void RigidBodySystem::createControlParticle() {
+		Vector3 startPosition = Vector3(0, 5, 0); // Posición inicial en la carretera
+		Vector4 color = Vector4(1, 0, 0, 1); // Color rojo
+		float size = 2.0f; // Tamaño de la partícula
+
+		// Crea la partícula
+		controlParticle = new RigidBody(scene, physics, startPosition, Vector3(0, 0, 0), Vector3(0, 0, 0), 1, size, s_sphere, color);
+		controlParticle->setMass(1.0f); // Establece una masa
+		rbs.push_back(controlParticle);
+	}
+
+	void RigidBodySystem::createCurvedRoad() {
+		int numParticles = 200; // Número de partículas para simular la carretera
+		Vector4 roadColor = Vector4(1, 0, 0, 1); // Color rojo para la carretera
+
+		// Parámetros de la elipse
+		float a = 100.0f; // Semieje mayor
+		float b = 50.0f; // Semieje menor
+		Vector3 center = Vector3(-100, 0, 0); // Centro de la elipse
+		float laneOffset = 5.0f; // Desplazamiento entre los carriles
+
+		for (int i = 0; i < numParticles; i++) {
+			float angle = static_cast<float>(i) / numParticles * 2.0f * 3.14; // Ángulo en radianes
+
+			// Posición para el carril izquierdo
+			float xLeft = center.x + (a + laneOffset) * cos(angle);
+			float zLeft = center.z + (b + laneOffset) * sin(angle);
+			Vector3 positionLeft = Vector3(xLeft, center.y, zLeft);
+
+			// Posición para el carril derecho
+			float xRight = center.x + (a - laneOffset) * cos(angle);
+			float zRight = center.z + (b - laneOffset) * sin(angle);
+			Vector3 positionRight = Vector3(xRight, center.y, zRight);
+
+			// Crear partícula para el carril izquierdo
+			RigidBody* roadParticleLeft = new RigidBody(scene, physics, positionLeft, Vector3(0, 0, 0), Vector3(0, 0, 0), 1, 20, s_cube, roadColor);
+			roadParticleLeft->setMass(0.0f);
+			roadParticleLeft->setLifeTime(100000000000);
+			rbs.push_back(roadParticleLeft);
+
+			// Crear partícula para el carril derecho
+			RigidBody* roadParticleRight = new RigidBody(scene, physics, positionRight, Vector3(0, 0, 0), Vector3(0, 0, 0), 1, 20, s_cube, roadColor);
+			roadParticleRight->setMass(0.0f);
+			roadParticleRight->setLifeTime(100000000000);
+			rbs.push_back(roadParticleRight);
+		}
+	}
+
 	void generateBowlingPins() {
 		// Seleccionar un patrón aleatoriamente
 		BowlingPinPattern pattern = static_cast<BowlingPinPattern>(std::rand() % 3);
