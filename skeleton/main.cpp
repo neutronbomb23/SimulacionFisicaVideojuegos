@@ -139,7 +139,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch(toupper(key))
 	{
 	case '6':
-		partGen->getSys()->generateSpringDemo(partGen->getSys()->ANCHORED);
+		partGen->getSys()->generateRedRectangles();
 		break;
 	case 'K':
 		partGen->getSys()->addK(10);
@@ -157,6 +157,9 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		RBSys->addExplosion();
 		break;
 
+	case 'N':
+		RBSys->generateBowlingPins();
+		break;
 	// P5 de los rigidos solidos papu
 	case 'X':
 		RBSys->createGenerators(g_sphere);

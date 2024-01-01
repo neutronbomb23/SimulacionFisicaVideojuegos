@@ -19,6 +19,7 @@ protected:
 
 	Shape shapeType;
 	float lifeTime; 
+
 	bool alive;
 
 public:
@@ -75,11 +76,25 @@ public:
 	float getMass() { return solid->getMass(); }
 	float getInvMass() { return solid->getInvMass(); }
 	
+	void RigidBody::setMass(float mass) {
+		if (mass <= 0) {
+			// Si la masa es 0 o negativa, se desactiva la dinámica del cuerpo rígido
+			solid->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+			solid->setMass(0.0f);
+		}
+		else {
+			// Para masa positiva, se ajusta la masa y se recalcula la inercia
+			solid->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false);
+			solid->setMass(mass);
+			PxRigidBodyExt::updateMassAndInertia(*solid, mass);
+		}
+	}
 
 
 	Vector3 getPosition() { return solid->getGlobalPose().p; }
 	Vector3 getLinearVelocity() { return solid->getLinearVelocity(); }
 	double getLifeTime() { return lifeTime; }
+	void setLifeTime(double time) { lifeTime = time; }
 	bool isAlive() { return alive; }
 	Vector4 getColor() { return render->color; }
 	Shape getShape() { return shapeType; }

@@ -98,6 +98,9 @@ void RigidBodySystem::createGenerators(GeneratorType T) {
     }
 }
 
+
+
+
 // Method to shoot a rigid body like a projectile.
 void RigidBodySystem::shootRB() {
     Camera* cam = GetCamera();
