@@ -25,9 +25,9 @@
     <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="BouyancyForceGenerator.cpp" />
     <ClCompile Include="RigidBodyGenerator.cpp" />
-    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="RigidBodyForceRegistry.cpp" />
     <ClCompile Include="RigidBodySystem.cpp" />
+    <ClCompile Include="Generator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -57,6 +57,8 @@
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="RigidBodyForceRegistry.h" />
     <ClInclude Include="RigidBodySystem.h" />
+    <ClInclude Include="Generator.h" />
+    <ClInclude Include="Matrix4x4.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

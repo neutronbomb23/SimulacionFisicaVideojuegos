@@ -10,9 +10,9 @@ public:
     virtual void updateForce(Particle* particle, double t);
     void updateForce(RigidBody* rb, double t);
 protected:
-    float K;
-    float T;
-    float R;
+    float K /*intensidad*/;
+    float T /*constante de tiempo*/ ;
+    float R /*radio de la explosión*/;
     float calcR(Vector3 c, Vector3 p);
 };
 

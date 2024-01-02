@@ -4,11 +4,13 @@
 #include "Particle.h"
 using namespace physx;
 class ParticleSystem;
+class Generator;
 class Firework
 {
     const float pi = 3.14159265359f;
 private:
     ParticleSystem* partS;
+    Generator* Gen;
     Vector3 vel;
     PxTransform trans;
     RenderItem* rend;
@@ -21,6 +23,8 @@ private:
 public:
     Firework(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float damping, Vector4 c, ParticleSystem* pS, int generation = 0);
     Firework(PxTransform pos, Vector3 dir, int generation, ParticleSystem* pS);
+    Firework(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float damping, Vector4 c, Generator* gn, int generation = 0);
+    Firework(PxTransform pos, Vector3 dir, int generation, Generator* gn);
     ~Firework();
 
     void update(double t);

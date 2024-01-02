@@ -1,5 +1,5 @@
 #include "ParticleSystem.h"
-#include <random> 
+
 ParticleSystem::~ParticleSystem() {
     for (auto& i : particles) delete i; 
     for (auto& j : fireworks) delete j;
@@ -39,7 +39,10 @@ void ParticleSystem::update(float t) {
 
 void ParticleSystem::addParticle(Particle* p) {
     particles.push_back(p);
- 
+    //addGravity(p);
+    //addWind(p);
+    //addVortex(p);
+    //addBurst(p);
 }
 
 void ParticleSystem::addFirework(Firework* f) {
@@ -47,35 +50,39 @@ void ParticleSystem::addFirework(Firework* f) {
 }
 
 void ParticleSystem::addGravity(Particle* p) {
-  
-    float velS = p->getVelS();
-    float velR = p->getVelR();
-    Vector3 gR = Vector3(0, -9.8f, 0);
-    Vector3 gS = gR * powf((velS / velR), 2);
+    /*gS = gR * powf((velS / velR), 2);
+   inverse_massS = (powf(velS, 2) * inverse_mass) / powf(velR, 2);*/// m1 = ((v1^2)*m2)/(v2^2) Por igualación de 
+   //energías y teniendo en cuenta que es la masa inversa
+    float velS = p->getVelS();// en m/s (velocidad simulada)
+    float velR = p->getVelR();// en m/s (velocidad real)
+    Vector3 gR = Vector3(0, -9.8f, 0);// gravedad real
+    //Vector3 gS = Vector3(0, -0.02245925758, 0);// gravedad simulada
+    Vector3 gS = gR * powf((velS / velR), 2);// gravedad simulada
+
     GravityForceGenerator* g = new GravityForceGenerator(gS);
-    partRgis->addRegistry(g, p);
+    partRgis->addRegistry(g, p);// añadimos la fuerza a la particula
 }
 
 void ParticleSystem::addWind(Particle* p) {
     Vector3 wind = Vector3(-10, 0, 0);
-    float k1 = 0.25, k2 = 0.1;
+    float k1 = 0.25 /*coeficiente de rozamiento con el aire*/, k2 = 0.1;
     w = new WindForceGenerator(wind, k1, k2);
-    partRgis->addRegistry(w, p);
+    partRgis->addRegistry(w, p);// añadimos la fuerza a la particula
 }
 
 void ParticleSystem::addVortex(Particle* p) {
     Vector3 wind = Vector3(-10, 0, 0);
     float k = 0.01 /*constante de fuerza del torbellino*/;
     VortexForceGenerator* v = new VortexForceGenerator(k, wind);
-    partRgis->addRegistry(v, p);
+    partRgis->addRegistry(v, p);// añadimos la fuerza a la particula
 }
 
 void ParticleSystem::addBurst(Particle* p) {
-    float k = 1000;
+    float k = 1000 /*constante de fuerza de la explosion*/;
     float r = 1500;
     float t = 2;
     BurstForceGenerator* b = new BurstForceGenerator(k, r, t);
-    partRgis->addRegistry(b, p);
+    partRgis->addRegistry(b, p);// añadimos la fuerza a la particula
 }
 
 void ParticleSystem::addExplosion() {
@@ -103,10 +110,12 @@ void ParticleSystem::generateSpringDemo(SpringType type) {
     switch (type)
     {
     case ParticleSystem::SPRING:
+        // First one standard spring uniting 2 particles
         tr.p = Vector3(10, 30, 20);
         p1 = new Particle(s, tr, { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, gS, 0.85, color, this);
         tr.p = Vector3(20, 30, 10);
         p2 = new Particle(s, { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, gS, 0.85, color, this);
+        //p2->setMass(2.0);
         f1 = new SpringForceGenerator(0.04, 10, p2);
         partRgis->addRegistry(f1, p1);
         f2 = new SpringForceGenerator(0.04, 10, p1);
@@ -117,13 +126,17 @@ void ParticleSystem::generateSpringDemo(SpringType type) {
         particles.push_back(p2);
         break;
     case ParticleSystem::ANCHORED:
-        //Then one spring with one fixed side // fucking box
+        //Then one spring with one fixed side
         tr.p = Vector3(10, 60, 20);
         p3 = new Particle(s, tr, { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, gS, 0.85, color, this);
+        //AnchoredSpringFG* f3 = new AnchoredSpringFG(0.1, 10, { 10.0,20.0,0.0 });
         tr.p = Vector3(20, 60, 10);
+        //f3 = new AnchoredSpringFG(0, 10, tr.p);
         f3 = new AnchoredSpringFG(0.3, 10, tr.p);
         particles.push_back(f3->getOther());
+        //_force_generators.push_back(f3);
         RegisterRenderItem(p3->getRenderItem());
+        //addGravity(p3);
         partRgis->addRegistry(f3, p3);
         particles.push_back(p3);
         break;
@@ -149,6 +162,20 @@ void ParticleSystem::generateSpringDemo(SpringType type) {
             prev = p;
         }
         break;
+    case GOMAELASTICA:
+        p1 = new Particle(s, tr, { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, gS, 0.85, color, this);
+        tr.p += Vector3(0, 15, 0);
+        p2 = new Particle(s, { 10.0, 10.0, 0.0 }, { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, gS, 0.85, color, this);
+        p2->setMass(2.0);
+        f1 = new SpringForceGenerator(1, 10, p2, true);
+        partRgis->addRegistry(f1, p1);
+        f2 = new SpringForceGenerator(1, 10, p1, true);
+        partRgis->addRegistry(f2, p2);
+        RegisterRenderItem(p1->getRenderItem());
+        RegisterRenderItem(p2->getRenderItem());
+        particles.push_back(p1);
+        particles.push_back(p2);
+        break;
     case BUOYANCY:
         activateBuoyancy();
         break;
@@ -164,6 +191,9 @@ void ParticleSystem::addK(int k) {
             SF->setK(k);
         }
     }
+    //if(f1 != nullptr)f1->setK(k);
+    //if(f2 != nullptr)f2->setK(k);
+    //if (f3 != nullptr) { f3->setK(k); }
 }
 
 void ParticleSystem::generateBuoyancy() {
@@ -200,67 +230,4 @@ void ParticleSystem::generateBuoyancy() {
     RegisterRenderItem(p3->getRenderItem());
     particles.push_back(p3);
     partRgis->addRegistry(water, p3);
-}
-
-void ParticleSystem::generateRedRectangles() {
-    Vector4 redColor = Vector4(1, 0, 0, 1); // Color rojo
-    Vector3 rectangleSize = Vector3(5, 1, 3); // Dimensiones del rectángulo
-    Vector3 startPosition(0, 0, 0); // Posición inicial de los rectángulos
-
-    for (int i = 0; i < 5; ++i) {
-        // Calcula la posición de cada rectángulo
-        Vector3 position = startPosition + Vector3(0, i * 2, 0); // Ajusta la separación vertical
-
-        // Crea la forma del rectángulo
-        PxShape* rectangleShape = CreateShape(PxBoxGeometry(rectangleSize.x, rectangleSize.y, rectangleSize.z));
-
-        // Crea la transformación con la posición
-        PxTransform transform(position.x, position.y, position.z);
-
-        // Crea la partícula y la añade al sistema
-        Particle* rectangle = new Particle(rectangleShape, transform, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, redColor, this);
-        RegisterRenderItem(rectangle->getRenderItem()); // Si tienes un sistema de renderizado
-        particles.push_back(rectangle);
-    }
-}
-
-void ParticleSystem::generateRoadParticles() {
-    Vector4 particleColor = Vector4(1, 0, 0, 1); // Color rojo para las partículas
-    float particleSize = 1.0f; // Tamaño de las partículas
-    int numParticles = 200; // Número de partículas a lo largo de la carretera
-    float randomness = 10.0f; // Grado de aleatoriedad en la posición de las partículas
-    Vector3 gravity = Vector3(0, -0.00009f, 0); // Fuerza de la gravedad
-
-    // Parámetros de la elipse de la carretera
-    float a = 100.0f; // Semieje mayor
-    float b = 50.0f; // Semieje menor
-    Vector3 center = Vector3(-100, 0, 0); // Centro de la elipse
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(-randomness, randomness);
-
-    for (int i = 0; i < numParticles; i++) {
-        float angle = static_cast<float>(i) / numParticles * 2.0f * M_PI; // Ángulo en radianes
-        float x = center.x + a * cos(angle) + dis(gen);
-        float y = center.y + dis(gen);
-        float z = center.z + b * sin(angle) + dis(gen);
-
-        Vector3 position = Vector3(x, y, z);
-
-        // Crea la forma y la transformación para la partícula
-        PxShape* particleShape = CreateShape(PxSphereGeometry(particleSize));
-        PxTransform transform(position.x, position.y, position.z);
-
-        // Crea la partícula y la añade al sistema
-        Particle* roadParticle = new Particle(particleShape, transform, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, particleColor, this);
-        RegisterRenderItem(roadParticle->getRenderItem());
-
-        // Añade la partícula al sistema
-        particles.push_back(roadParticle);
-
-        // Crea y añade el generador de fuerza de gravedad para esta partícula
-        GravityForceGenerator* gravityGenerator = new GravityForceGenerator(gravity);
-        partRgis->addRegistry(gravityGenerator, roadParticle);
-    }
 }

@@ -22,6 +22,31 @@ void BuoyancyForceGenerator::updateForce(Particle* particle, double t) {
 
 		Vector3 BuoyancyForce(0, 0, 0);
 		float inmersed = 0.0f;
+		if (h - h0 < height * 0.5f) {
+			inmersed = 0.0f;
+		}
+		else if (h0 - h > height * 0.5f) {
+			inmersed = 1.0f;
+		}
+		else {
+			inmersed = (h0 - h) / height + 0.5f;
+		}
+
+		BuoyancyForce.y = liquidDensity * volume * inmersed * gravity;
+		//if (particle->getTransform()->p.y >= height)BuoyancyForce.y = -BuoyancyForce.y;
+
+		particle->addForce(BuoyancyForce);
+	}
+}
+
+void BuoyancyForceGenerator::updateForce(RigidBody* rb, double t) {
+	if (fabs(rb->getInvMass()) < 1e-10) return;
+	else {
+		const float h = rb->getPosition().y;
+		const float h0 = liquidParticle->getTransform()->p.y;
+
+		Vector3 BuoyancyForce(0, 0, 0);
+		float inmersed = 0.0f;
 		if (h - h0 > height * 0.5f) {
 			inmersed = 0.0f;
 		}
@@ -33,6 +58,8 @@ void BuoyancyForceGenerator::updateForce(Particle* particle, double t) {
 		}
 
 		BuoyancyForce.y = liquidDensity * volume * inmersed * gravity;
-		particle->addForce(BuoyancyForce);
+		//if (particle->getTransform()->p.y >= height)BuoyancyForce.y = -BuoyancyForce.y;
+
+		rb->addForce(BuoyancyForce);
 	}
 }

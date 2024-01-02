@@ -48,8 +48,6 @@ float ParticleGenerator::RandomNormal(float mean, float stddev) {
     return mean + stddev * z;
 }
 
-
-
 void ParticleGenerator::generate(int gen) {
     Camera* camera = GetCamera();
 

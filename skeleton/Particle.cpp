@@ -15,13 +15,13 @@ acel(acc), damping(damp), trans(trans_), vel(v), gS(gsim), mass(Mass), velR(VelR
 }
 
 Particle::Particle(PxTransform trans_, Vector3 dir)
-    : trans(trans_)
+    : trans(trans_), partSys(nullptr)
 {
     rend = new RenderItem();
     int r = rand() % 3;
-    if (r == 0) bullet(dir);
-    else if (r == 1) laser(dir);
-    else fireball(dir);
+    /*if (r == 0) bullet(dir);
+    else if (r == 1)*/ laser(dir);
+    //else fireball(dir);
     rend->transform = &trans;
     RegisterRenderItem(rend);
 }
@@ -51,7 +51,8 @@ void Particle::bullet(Vector3 dir) {
 
 void Particle::laser(Vector3 dir) {
     // velocidad real 3*10^8 m/s
-    vel = dir * 25;// velocidad simulada
+    //vel = dir * 25;// velocidad simulada
+    vel = dir * 125;// velocidad simulada
     acel = Vector3(0, 0, 0);
     gS = Vector3(0, 0, 0);// aproximadamente 0
     //masa simulada infinita
@@ -70,7 +71,7 @@ Particle::~Particle() {
 
 bool Particle::update(float t) {
     lifetime += t;
-    if (lifetime >= 100.0f)dest = true;
+    if (lifetime >= 1.0f)dest = true;
     integrate(t);
     render();
     return _remaining_time > 0.0;

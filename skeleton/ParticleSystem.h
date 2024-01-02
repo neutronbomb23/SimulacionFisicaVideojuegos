@@ -11,7 +11,6 @@
 #include "AnchoredSpringFG.h"
 #include "BouyancyForceGenerator.h"
 using namespace std;
-const double M_PI = 3.14159265358979323846;
 
 class ParticleSystem
 {
@@ -26,6 +25,7 @@ private:
 	int current = 0;
 	WindForceGenerator* w = nullptr;
 	BurstForceGenerator* b = nullptr;
+	//list<SpringForceGenerator*> springs;
 
 public:
 	ParticleSystem() { partRgis = new ParticleForceRegistry();  }
@@ -37,8 +37,6 @@ public:
 	void quitaBurst();
 	void generateSpringDemo(SpringType type);
 	void generateBuoyancy();
-	void generateRedRectangles();
-	void generateRoadParticles();
 	void addK(int k);
 	ParticleForceRegistry* getPartRegis() { return partRgis; }
 protected:
@@ -83,6 +81,13 @@ private:
 	Particle* buoyancyTest = nullptr;
 
 public:
-	
+	void addTestMass(int M) {
+		if (buoyancyTest != nullptr) {
+			if (buoyancyTest->massS + M > 0) {
+				buoyancyTest->setMass(buoyancyTest->massS + M);
+				cout << buoyancyTest->massS << endl;
+			}
+		}
+	}
 	
 };
