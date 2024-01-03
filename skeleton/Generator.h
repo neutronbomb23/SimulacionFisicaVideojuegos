@@ -18,7 +18,7 @@ protected:
 	int fires = 0;
 	int numFires = 0;
 	PxScene* scene;
-
+	bool fireworkActive;
 	PxPhysics* physics;
 	list<RigidBody*> rbs;
 	list<RigidBody*> rbsMoving;
@@ -37,6 +37,7 @@ public:
 	float cont = 0;
 	Generator(PxScene* Scene, PxPhysics* Physics) :scene(Scene), physics(Physics), playing(false)
 	{
+		fireworkActive = false;
 		bulletCount = 0;
 		rbRgis = new RigidBodyForceRegistry();
 	};
@@ -44,14 +45,16 @@ public:
 	void shootRB();
 	bool nivel1();
 	void winGame();
-	void createFireworks();
 	void shootRBAlternate();
+	void createFireworks(int n);
+	void createAnchoredSprings();
 	void borraWin();
 	void Fireworks(float t);
 	void gameOver();
 	void borraFlot();
 
 	void spawnMovingBlocks() {
+		createAnchoredSprings();
 		// Posición inicial lejos en el eje Z positivo
 		Vector3 startPos = Vector3(-60, 10, -150); // Ajusta según la ubicación de tu cámara
 		float spacing = 15.0f; // Espaciado reducido entre los bloques para acomodar 15

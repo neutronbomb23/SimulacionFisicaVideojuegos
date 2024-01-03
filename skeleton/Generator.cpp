@@ -1,7 +1,10 @@
 	#include "Generator.h"
+	#include "AnchoredSpringFG.h"
 
 	void Generator::update(float t) {
 		cont -= t;
+		bool anyFireworkActive = false;
+		fireworkActive = anyFireworkActive;
 		for (RigidBody* rb : rbs) {
 			if (rb->isAlive()) { rb->integrate(t); }
 			else { rbsToDelete.push_back(rb); }
@@ -38,14 +41,13 @@
 		}
 		rbRgis->updateForces(t);
 		deleteUnusedRB();
-		if (cont <= 0) { 
+		if (cont <= 0 && !fireworkActive) { // Crear fuegos artificiales si es necesario
 			Fireworks(t);
+			
 			winGame();
 		}
-		if (win) {
-			Fireworks(t);
-		}
 	}
+
 	void Generator::deleteUnusedRB() {
 		for (auto it = rbsToDelete.begin(); it != rbsToDelete.end();) {
 			rbRgis->deleteRigidBodyRegistry(*it);
@@ -95,11 +97,12 @@
 
 			// Eliminar bloques en movimiento
 			for (auto rb : rbsMoving) {
-				rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
+				//rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
 				delete rb;
 			}
+		
 			rbsMoving.clear();
-
+			createFireworks(10);
 			// Llamar a deleteUnusedRB para limpiar los bloques regulares marcados para eliminación
 			deleteUnusedRB();
 		}
@@ -158,6 +161,47 @@
 			bulletCount++;
 		}
 	}
+
+	void Generator::createFireworks(int n) {
+
+		if (!fireworkActive) {
+			fireworkActive = true;
+			int numberOfFireworks = n;
+			// Obtén la posición y la dirección de la cámara
+			Camera* camera = GetCamera(); // Asumiendo que tienes una función GetCamera()
+			PxVec3 camPosition = camera->getEye();
+			PxVec3 camDirection = camera->getDir();
+
+			// Define la distancia frente a la cámara donde aparecerán los fuegos artificiales
+			float distanceInFrontOfCamera = 20.0f;
+
+			for (int i = 0; i < numberOfFireworks; i++) {
+				// Calcula la posición inicial para cada fuego artificial
+				PxVec3 fireworkPosition = camPosition + camDirection * distanceInFrontOfCamera;
+
+				// Crea un nuevo fuego artificial en esta posición
+				PxTransform initialPosition = PxTransform(fireworkPosition);
+				Vector3 initialDirection = Vector3(0, 1, 0); // Dirección hacia arriba, modifica según sea necesario
+
+				Firework* newFirework = new Firework(initialPosition, initialDirection, 0, this);
+				this->fireworks.push_back(newFirework);
+			}
+		}
+	}
+
+	void Generator::createAnchoredSprings() {
+		// Definir la posición del anclaje y las propiedades del muelle
+		Vector3 anchorPosition(0.0f, 10.0f, 0.0f); // Ejemplo de posición del anclaje
+		float springConstant = 10.0f; // Constante del muelle
+		float restLength = 5.0f;      // Longitud de reposo
+
+		// Añadir un AnchoredSpring a cada RigidBody
+		for (auto rb : rbs) {
+			AnchoredSpringFG* spring = new AnchoredSpringFG(springConstant, restLength, anchorPosition);
+			rbRgis->addRegistry(spring, rb); // Asumiendo que rbRgis puede manejar AnchoredSprings
+		}
+	}
+
 
 	void Generator::Fireworks(float t) {
 		Camera* camera = GetCamera();
