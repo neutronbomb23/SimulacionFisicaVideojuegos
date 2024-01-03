@@ -81,9 +81,7 @@
 	bool Generator::nivel1() {
 		if (!playing) {
 			bulletCount = 0; // Reiniciar el conteo de balas
-			cont = 5;       // Reiniciar el temporizador
-			if (win) borraWin();
-			if (lose) borraFlot();
+			cont = 30;       // Reiniciar el temporizador
 			playing = true;
 			spawnMovingBlocks();
 			return true;
@@ -97,13 +95,12 @@
 
 			// Eliminar bloques en movimiento
 			for (auto rb : rbsMoving) {
-				//rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
+				rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
 				delete rb;
 			}
 		
 			rbsMoving.clear();
 			createFireworks(10);
-			// Llamar a deleteUnusedRB para limpiar los bloques regulares marcados para eliminación
 			deleteUnusedRB();
 		}
 	}

@@ -15,8 +15,6 @@
 #include <iostream>
 
 std::string display_text = "PFINAL CUNTS";
-std::string display_gameOver = "<<<<GAME OVER!>>>>";
-std::string display_win = "<<<<YOU WIN!>>>>";
 std::string display_cont = "TIEMPO RESTANTE: ";
 std::string display_title = "<<<<DESTRUYE BLOQUES>>>>";
 // Removed display_niv variable since it's no longer needed
@@ -76,17 +74,21 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	//SUELO
 	suelo = gPhysics->createRigidStatic(PxTransform{ 200,0, 100 });
 	PxShape* shape = CreateShape(PxBoxGeometry(300, 0.1, 300));
 	suelo->attachShape(*shape);
 	gScene->addActor(*suelo);
-	item = new RenderItem(shape, suelo, { 0.8,0.8,0.8,1 });
+
+	// Update this line to change the color to dark blue
+	item = new RenderItem(shape, suelo, { 0.0, 0.0, 0.1, 0.1 });
+
 	shape = CreateShape(PxBoxGeometry(0.1, 0.1, 0.1));
 	item->shape = shape;
 
+
 	Gen = new Generator(gScene, gPhysics);
 	GetCamera()->setGen(Gen);
+
 	 // Start with level 1 directly
 	if (Gen->nivel1()) {
 		displayWinText = false; displayGameOverText = false; displayContText = true; displayTitleText = false;
@@ -156,6 +158,9 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		break;
 	case 'V':
 		Gen->addWind();
+		break;
+	case 'P':
+		Gen->shootRBAlternate();
 		break;
 	default:break;
 	}

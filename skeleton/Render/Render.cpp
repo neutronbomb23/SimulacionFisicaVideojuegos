@@ -264,9 +264,6 @@ void setupDefaultRenderState()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-	//glEnable(GL_BLEND);
 
 	// Setup lighting
 	glEnable(GL_LIGHTING);
@@ -291,39 +288,57 @@ void startRender(const PxVec3& cameraEye, const PxVec3& cameraDir, PxReal clipNe
 	drawText(display_text, 0, 0);
 	if (displayGameOverText) {
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		int num = 150;
-		for (int i = 0; i < 28; i++) {
-			num += 10;
-			drawText(display_gameOver, 230, num);
-		}
-		num = 80;
-		for (int j = 0; j < 6; j++) {
-			num += 10;
-			drawText(display_gameOver, 230, num);
-		}
+
+		// Split the display_gameOver string into two lines.
+		std::string line1 = "YOU LOST,";
+		std::string line2 = "TARD TWAT!";
+
+		int xPosition = 130; // Horizontal position for rendering the text.
+		int yPosition = 150; // Starting vertical position for the first line.
+		int lineSpacing = 20; // Vertical spacing between lines.
+
+		// Render the first line.
+		drawText(line1, xPosition, yPosition);
+
+		// Render the second line below the first line.
+		drawText(line2, xPosition, yPosition + lineSpacing);
 	}
+
 	if (displayWinText) {
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f); 
-		int num = 150;
-		for (int i = 0; i < 28; i++) {
-			num += 10;
-			drawText(display_win, 230, num);
-		}
-		num = 80;
-		for (int j = 0; j < 6; j++) {
-			num += 10;
-			drawText(display_win, 230, num);
-		}
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+		// Split the display_win string into two lines.
+		std::string line1 = "YOU WIN!";
+		std::string line2 = "LITTLE TWAT!";
+
+		int xPosition = 130; // Horizontal position for rendering the text.
+		int yPosition = 150; // Starting vertical position for the first line.
+		int lineSpacing = 20; // Vertical spacing between lines.
+
+		// Render the first line.
+		drawText(line1, xPosition, yPosition);
+
+		// Render the second line below the first line.
+		drawText(line2, xPosition, yPosition + lineSpacing);
 	}
+
 	if (displayContText) {
-		glColor4f(1.0f, 0.2f, 0.2f, 1.0f);
-		drawText(display_cont, 330, 360);
+		// Green color
+		glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+
+		// Calculate the x position for center alignment
+		int windowWidth = glutGet(GLUT_WINDOW_WIDTH);
+		size_t textLength = display_cont.length();
+		int textWidth = textLength * 9; // Assuming each character is approximately 9 pixels wide
+		int xPosition = (windowWidth - textWidth) / 2; // Center align the text
+
+		// Set the y position to a fixed value near the top of the window
+		int yPosition = glutGet(GLUT_WINDOW_HEIGHT) - 40; // 40 pixels from the top
+
+		// Draw the text
+		drawText(display_cont, xPosition, yPosition);
 	}
-	if (displayTitleText) {
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f); 
-		drawText(display_title, 230, 250);
-		drawText(display_niv, 215, 215);
-	}
+
 
 	// Setup camera
 	glMatrixMode(GL_PROJECTION);
