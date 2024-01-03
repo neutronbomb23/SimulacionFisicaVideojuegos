@@ -5,7 +5,7 @@ BuoyancyForceGenerator::BuoyancyForceGenerator(float Height, float Volume, float
 	volume = Volume;
 	liquidDensity = LiquidDensity;
 	Vector4 color = Vector4(0.1, 0.5, 0.6, 0.7);
-	PxTransform tr = PxTransform(0, 0, 0);
+	PxTransform tr = PxTransform(0, 30, 0);
 	liquidParticle = new Particle(CreateShape(PxBoxGeometry(110, 110, 110)), tr, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.85, color);
 	RegisterRenderItem(liquidParticle->getRenderItem());
 }

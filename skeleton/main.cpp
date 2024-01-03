@@ -16,8 +16,10 @@
 
 std::string display_text = "PFINAL CUNTS";
 std::string display_cont = "TIEMPO RESTANTE: ";
-std::string display_title = "<<<<DESTRUYE BLOQUES>>>>";
-// Removed display_niv variable since it's no longer needed
+std::string display_title = "Que no te alcancen";
+
+
+
 std::string display_niv;
 
 bool displayWinText;
@@ -40,7 +42,7 @@ PxSphereGeometry		sphereGeometry = NULL;
 PxMaterial*				gMaterial	= NULL;
 
 PxPvd*                  gPvd        = NULL;
-
+ParticleGenerator* partGen = nullptr;
 PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
@@ -64,7 +66,7 @@ void initPhysics(bool interactive)
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-
+	partGen = new ParticleGenerator();
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
@@ -118,7 +120,7 @@ void stepPhysics(bool interactive, double t)
 		item->shape = shape;
 	}
 	if(!Gen->win && !Gen->lose)display_cont = "TIEMPO RESTANTE: " + to_string(Gen->cont);
-
+	partGen->update(t);
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 }
@@ -151,10 +153,13 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch(toupper(key))
 	{
 	case ' ':
-		Gen->shootRB();
+		Gen->shootRBWithForce();
 		break;
 	case 'E':
 		Gen->addExplosion();
+		break;
+	case 'B':
+		partGen->generate(4);
 		break;
 	case 'V':
 		Gen->addWind();
@@ -162,7 +167,10 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case 'P':
 		Gen->shootRBAlternate();
 		break;
-	default:break;
+	case 'T':
+		Gen->createFireworks(3);
+	default:
+		break;
 	}
 }
 

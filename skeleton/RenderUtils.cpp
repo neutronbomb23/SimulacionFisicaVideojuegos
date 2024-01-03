@@ -127,7 +127,7 @@ void exitCallback(void)
 void renderLoop()
 {
 	StartCounter();
-	sCamera = new Camera(PxVec3(0.0f, 15.0f, 35.0f), PxVec3(0.0f, -0.1f, -1.0f));
+	sCamera = new Camera(PxVec3(0.0f, 5.0f, 45.0f), PxVec3(0.0f, -0.1f, -1.0f));
 
 	setupDefaultWindow("Simulacion Fisica Videojuegos");
 	setupDefaultRenderState();

@@ -34,7 +34,7 @@
 
 		for (RigidBody* rb : rbsMoving) {
 			rb->moveTowardsNegativeZ(t);
-			if (rb->getPosition().z > 130) {
+			if (rb->getPosition().z > 0) {
 				gameOver(); // Finalizar el juego si algún bloque cruza el límite
 				break; // Salir del bucle ya que el juego ha terminado
 			}
@@ -43,7 +43,7 @@
 		deleteUnusedRB();
 		if (cont <= 0 && !fireworkActive) { // Crear fuegos artificiales si es necesario
 			Fireworks(t);
-			
+			//gameOver();
 			winGame();
 		}
 	}
@@ -81,7 +81,7 @@
 	bool Generator::nivel1() {
 		if (!playing) {
 			bulletCount = 0; // Reiniciar el conteo de balas
-			cont = 30;       // Reiniciar el temporizador
+			cont = 50;       // Reiniciar el temporizador
 			playing = true;
 			spawnMovingBlocks();
 			return true;
@@ -98,7 +98,9 @@
 				rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
 				delete rb;
 			}
-		
+	/*		if (particleSystem != nullptr) {
+				particleSystem->generateSpringDemo(ParticleSystem::SpringType::ANCHORED);
+			}*/
 			rbsMoving.clear();
 			createFireworks(10);
 			deleteUnusedRB();
@@ -127,19 +129,30 @@
 			lose = true;
 			playing = false;
 			water = new BuoyancyForceGenerator(1200, 0.5, 1500);
-			for (auto shoot : shoots)shootsToDelete.push_back(shoot);
-			deleteUnusedRB();
-			for (auto rb : rbs) 
+			/*for (auto shoot : shoots)shootsToDelete.push_back(shoot);
+			deleteUnusedRB();*/
+			for (auto rb : rbs)
 				rbRgis->addRegistry(water, rb);
 		}
 	}
-	void Generator::borraFlot() {
-		while (!rbs.empty()) { rbsToDelete.push_back(rbs.front()); rbs.pop_front(); }
-		deleteUnusedRB();
-		//	delete water;
-		lose = false;
-	}
 
+	void Generator::borraFlot() {
+		// Eliminar el generador de flotación y restablecer el estado
+		if (water) {
+			delete water;
+			water = nullptr;
+		}
+
+		// Restablecer el estado de pérdida
+		lose = false;
+
+		// Eliminar todos los cuerpos rígidos
+		while (!rbs.empty()) {
+			rbsToDelete.push_back(rbs.front());
+			rbs.pop_front();
+		}
+		deleteUnusedRB();
+	}
 	void Generator::addFirework(Firework* f) 
 	{ fireworks.push_back(f); }
 
@@ -148,16 +161,32 @@
 
 	void Generator::shootRBAlternate() {
 		if (playing) {
+			// Obtener la cámara actual
 			Camera* cam = GetCamera();
-			Vector3 pos = cam->getEye() + cam->getDir();
-			Vector3 dir = Vector3(cam->getDir().x * 1500, cam->getDir().y * 1500, cam->getDir().z * 1500); // Velocidad aumentada
 
-			Vector4 color = Vector4(0, 1, 1, 1); // Color cian para diferenciarlo
-			RigidBody* rb_ = new RigidBody(scene, physics, pos, dir, Vector3(0, 0, 0), 0, 20, s_sphere, color, 4.5); // Uso del nuevo color
+			// Utilizar la dirección de la cámara para el disparo, pero fijar el eje Y a 0
+			Vector3 camDirection = cam->getDir();
+			camDirection.y = 0; // Fijar el eje Y a 0 para mantener una altura constante
+			camDirection.normalize(); // Normalizar la dirección de la cámara
+
+			// Ajustar la magnitud de la velocidad del proyectil
+			Vector3 dir = camDirection * 1500; // Multiplicar por la velocidad deseada
+
+			// La posición de spawn del proyectil será la posición actual de la cámara, pero con eje Y fijado en 0
+			Vector3 pos = cam->getEye();
+			pos.y = 0; // Fijar la altura de spawn en el eje Y a 0
+
+			// Definir el color del proyectil (opcional)
+			Vector4 color = Vector4(0, 1, 1, 1); // Color cian
+
+			// Crear y agregar el nuevo proyectil a la lista de disparos
+			RigidBody* rb_ = new RigidBody(scene, physics, pos, dir, Vector3(0, 0, 0), 0, 20, s_sphere, color, 4.5);
 			shoots.push_back(rb_);
 			bulletCount++;
 		}
 	}
+
+
 
 	void Generator::createFireworks(int n) {
 
@@ -197,6 +226,67 @@
 			AnchoredSpringFG* spring = new AnchoredSpringFG(springConstant, restLength, anchorPosition);
 			rbRgis->addRegistry(spring, rb); // Asumiendo que rbRgis puede manejar AnchoredSprings
 		}
+	}
+	void Generator::shootRBWithForce() {
+		if (playing) {
+			Camera* cam = GetCamera();
+			Vector3 pos = cam->getEye() + cam->getDir();
+			Vector3 dir = cam->getDir() * 1500;
+			dir.y = 0;
+
+			Vector4 color = Vector4(0, 1, 0, 1); // Color verde
+			RigidBody* rb_ = new RigidBody(scene, physics, pos, dir, Vector3(0, 0, 0), 0, 20, s_sphere, color, 4.5);
+
+			// Aplicar una fuerza aleatoria (viento o explosión) a este proyectil
+			applyRandomForce(rb_);
+
+			shoots.push_back(rb_);
+			bulletCount++;
+		}
+	}
+
+	void Generator::applyRandomForce(RigidBody* rb) {
+		int choice = rand() % 2; // 0 o 1 para elegir aleatoriamente entre viento y explosión
+
+		if (choice == 0) {
+			int c = rand() % 4;
+			if (c == 0) {
+			// Aplicar fuerza de viento
+			WindForceGenerator* wind = new WindForceGenerator(Vector3(60, 0, 0), 2005, 0);
+			rbRgis->addRegistry(wind, rb);
+			}
+			else if(c == 1){
+			// Aplicar fuerza de viento
+			WindForceGenerator* wind = new WindForceGenerator(Vector3(-60, 0, 0), 2005, 0);
+			rbRgis->addRegistry(wind, rb);
+			}
+			else if (c == 2) {
+				// Aplicar fuerza de viento
+				WindForceGenerator* wind = new WindForceGenerator(Vector3(0, 30, 0), 2005, 0);
+				rbRgis->addRegistry(wind, rb);
+			}
+			else {
+				// Aplicar fuerza de viento
+				WindForceGenerator* wind = new WindForceGenerator(Vector3(0, -60, 0), 2005, 0);
+				rbRgis->addRegistry(wind, rb);
+			}
+			
+		}
+		else {
+			// Aplicar fuerza de explosión
+			BurstForceGenerator* burst = new BurstForceGenerator(1000000, 15000000, 0);
+			rbRgis->addRegistry(burst, rb);
+		}
+	}
+
+
+	void Generator::applyWind(RigidBody* rb) {
+	
+	}
+
+
+	void Generator::applySpecialForce(RigidBody* rb) {
+		addExplosion();
 	}
 
 

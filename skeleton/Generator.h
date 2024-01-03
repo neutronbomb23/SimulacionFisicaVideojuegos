@@ -8,10 +8,12 @@
 #include "BurstForceGenerator.h"
 #include "FireWork.h"
 #include "Particle.h"
+#include "ParticleSystem.h" 
 using namespace std;
 class Generator
 {
 protected:
+
 	int numObstacles;
 	bool playing = false;
 	bool clic = false;
@@ -21,6 +23,7 @@ protected:
 	bool fireworkActive;
 	PxPhysics* physics;
 	list<RigidBody*> rbs;
+	std::vector<AnchoredSpringFG*> anchoredSprings;
 	list<RigidBody*> rbsMoving;
 	list<RigidBody*> rbsToDelete;
 	list<RigidBody*> shoots;
@@ -37,6 +40,7 @@ public:
 	float cont = 0;
 	Generator(PxScene* Scene, PxPhysics* Physics) :scene(Scene), physics(Physics), playing(false)
 	{
+		srand(static_cast<unsigned int>(time(nullptr)));
 		fireworkActive = false;
 		bulletCount = 0;
 		rbRgis = new RigidBodyForceRegistry();
@@ -48,11 +52,17 @@ public:
 	void shootRBAlternate();
 	void createFireworks(int n);
 	void createAnchoredSprings();
+	void shootRBWithForce();
+	void applyRandomForce(RigidBody* rb);
+	void applyWind(RigidBody* rb);
+	void applySpecialForce(RigidBody* rb);
 	void borraWin();
 	void Fireworks(float t);
 	void gameOver();
 	void borraFlot();
-
+	bool getWin() {
+		return win;
+	}
 	void spawnMovingBlocks() {
 		createAnchoredSprings();
 		// Posición inicial lejos en el eje Z positivo
@@ -99,12 +109,12 @@ public:
 		}
 	}
 	void callHit() {
-	
+		
 	}
 
 	void addWind() {
 		if (playing) {
-			WindForceGenerator* wind = new WindForceGenerator(Vector3(-60, 0, 0), 25, 0);
+			WindForceGenerator* wind = new WindForceGenerator(Vector3(-60, 0, 0), 2005, 0);
 			for (auto rb : shoots)
 				rbRgis->addRegistry(wind, rb);
 		}
