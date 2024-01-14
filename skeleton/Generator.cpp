@@ -98,9 +98,7 @@
 				rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
 				delete rb;
 			}
-	/*		if (particleSystem != nullptr) {
-				particleSystem->generateSpringDemo(ParticleSystem::SpringType::ANCHORED);
-			}*/
+			water = new BuoyancyForceGenerator(1200, 0.5, 1500);
 			rbsMoving.clear();
 			createFireworks(10);
 			deleteUnusedRB();
@@ -128,6 +126,11 @@
 		if (!lose) {
 			lose = true;
 			playing = false;
+			// Eliminar bloques en movimiento
+			for (auto rb : rbsMoving) {
+				rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
+				delete rb;
+			}
 			water = new BuoyancyForceGenerator(1200, 0.5, 1500);
 			/*for (auto shoot : shoots)shootsToDelete.push_back(shoot);
 			deleteUnusedRB();*/
