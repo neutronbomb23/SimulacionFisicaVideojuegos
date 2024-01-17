@@ -63,33 +63,38 @@ public:
 	bool getWin() {
 		return win;
 	}
-	void Generator::spawnMovingBlocks() {
+	void spawnMovingBlocks() {
 		createAnchoredSprings();
 		// Posición inicial lejos en el eje Z positivo
-		Vector3 startPos = Vector3(-60, 10, -150);
-		float spacing = 15.0f;
+		Vector3 startPos = Vector3(-60, 10, -150); // Ajusta según la ubicación de tu cámara
+		float spacing = 15.0f; // Espaciado reducido entre los bloques para acomodar 15
 
 		// Los bloques se moverán hacia la cámara (hacia el eje Z negativo)
-		Vector3 moveDirection = Vector3(0, 0, -1);
-		float moveSpeed = 10.0f;
+		Vector3 moveDirection = Vector3(0, 0, -1); // Dirección de movimiento hacia la cámara
+		float moveSpeed = 10.0f; // Velocidad de movimiento
 
-		// Generar colores aleatorios más claros
+		// Generar colores aleatorios excepto rojo
 		std::random_device rd;
 		std::mt19937 gen(rd());
-		std::uniform_real_distribution<> dis(0.5, 1); // Ajusta este rango para colores más claros
+		std::uniform_real_distribution<> dis(0, 1);
 
 		for (int i = 0; i < 10; i++) {
-			Vector4 color = Vector4(dis(gen), dis(gen), dis(gen), 1);
+			// Evitar el color rojo (1, 0, 0)
+			Vector4 color;
+			do {
+				color = Vector4(dis(gen), dis(gen), dis(gen), 1);
+			} while (color.x > 0.8 && color.y < 0.2 && color.z < 0.2); // Rechazar tonos rojos
 
-			Vector3 pos = startPos + Vector3(spacing * i, 0, 0);
-			Vector3 velocity = moveDirection * moveSpeed;
+			Vector3 pos = startPos + Vector3(spacing * i, 0, 0); // Ajustar la posición en el eje X para cada bloque
+			Vector3 velocity = moveDirection * moveSpeed; // Velocidad constante hacia la cámara
 
 			RigidBody* rb = new RigidBody(scene, physics, pos, velocity, Vector3(0, 0, 0), 1.0, 20, s_cube, color, 3.5);
-			rb->setRandomMass(1.0f, 10.0f);
+			rb->setRandomMass(1.0f, 10.0f); // Masa aleatoria entre 1 y 10
 			rb->setRandomZVelocity(1.0f, 20.0f);
 			rbsMoving.push_back(rb);
 		}
 	}
+
 
 
 	void applyRandomForce() {

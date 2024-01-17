@@ -14,9 +14,9 @@
 
 #include <iostream>
 
-std::string display_text = "PFINAL CUNTS";
+std::string display_text = "PFINAL";
 std::string display_cont = "TIEMPO RESTANTE: ";
-std::string display_title = "Que no te alcancen";
+std::string display_title = "Que no salten la valla!";
 
 
 

@@ -75,13 +75,13 @@
 			bulletCount++;	
 		}
 	}
-
+	
 
 
 	bool Generator::nivel1() {
 		if (!playing) {
 			bulletCount = 0; // Reiniciar el conteo de balas
-			cont = 50;       // Reiniciar el temporizador
+			cont = 23;       // Reiniciar el temporizador
 			playing = true;
 			spawnMovingBlocks();
 			return true;
@@ -93,12 +93,11 @@
 			win = true;
 			playing = false;
 
-			// Eliminar bloques en movimiento
+			// Cambia el color de todos los bloques en movimiento a negro
 			for (auto rb : rbsMoving) {
-				rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
+				rb->changeColor(Vector4(0.0, 0.0, 0.0, 1.0)); // Color negro con opacidad completa
 				delete rb;
 			}
-			water = new BuoyancyForceGenerator(1200, 0.5, 1500);
 			rbsMoving.clear();
 			createFireworks(10);
 			deleteUnusedRB();
@@ -126,18 +125,19 @@
 		if (!lose) {
 			lose = true;
 			playing = false;
-			// Eliminar bloques en movimiento
-			for (auto rb : rbsMoving) {
-				rb->changeColor(Vector4(0.0, 0.0, 0.0, 0.0));
-				delete rb;
+
+			// Cambia el color de todos los bloques a negro
+			for (auto rb : rbs) {
+				rb->changeColor(Vector4(0.0, 0.0, 0.0, 1.0)); // Color negro con opacidad completa
 			}
+
+			// Continúa con el resto de la lógica de 'gameOver'
 			water = new BuoyancyForceGenerator(1200, 0.5, 1500);
-			/*for (auto shoot : shoots)shootsToDelete.push_back(shoot);
-			deleteUnusedRB();*/
 			for (auto rb : rbs)
 				rbRgis->addRegistry(water, rb);
 		}
 	}
+
 
 	void Generator::borraFlot() {
 		// Eliminar el generador de flotación y restablecer el estado
